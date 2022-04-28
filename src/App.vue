@@ -11,17 +11,33 @@
     </div>
 
     <div class="row">
+      <input
+        type="text"
+        v-model="searchTodo"
+        placeholder="검색"
+      />
       <h4>등록된 할 일 : {{ todos.length }}</h4>
+    </div><hr />
+
+    <div class="row">
       <ToDoSimpleForm @add-todo="addTodo" />
     </div>
 
-    <div v-if="!todos.length">
+    <!-- <div v-if="!todos.length">
+      추가된 할 일이 없습니다.
+    </div> -->
+    <div v-if="!filteredTodos.length">
       추가된 할 일이 없습니다.
     </div>
     
     <div class="row">
-      <ToDoList 
+      <!-- <ToDoList 
         :todos="todos" 
+        @toggle-todo="toggleTodo" 
+        @delete-todo="deleteTodo" 
+      /> -->
+      <ToDoList 
+        :todos="filteredTodos" 
         @toggle-todo="toggleTodo" 
         @delete-todo="deleteTodo" 
       />
@@ -31,7 +47,7 @@
 
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import ToDoList from './components/ToDoList.vue'; // Todo 목록 컴포넌트
 import ToDoSimpleForm from './components/ToDoSimpleForm.vue'; // Todo form 컴포넌트
@@ -43,7 +59,6 @@ export default {
   },
 
   setup() {
-    
     const todos = ref([]); // to-do 리스트
 
     const addTodo = (todo) => { // to-do 추가
@@ -58,11 +73,25 @@ export default {
       todos.value.splice(index, 1);
     };
 
+    const searchTodo = ref(''); // 검색할 to-do 리스트 키워드
+
+    const filteredTodos = computed(() => { // 필터링하여 to-do 리스트 검색
+      if(searchTodo.value) {
+        return todos.value.filter(todo => {
+          return todo.subject.includes(searchTodo.value);
+        });
+      }
+
+      return todos.value;
+    }); 
+
     return {
       todos,
       addTodo,
       toggleTodo,
       deleteTodo,
+      searchTodo,
+      filteredTodos,
     };
   }
 }
