@@ -1,3 +1,9 @@
+<!--
+작성일 : 2022.04.28
+작성자 : 부설연구소 사원 나민우
+설명 : Todo 추가 
+-->
+
 <template>
     <form @submit="addTodo">
         <div>
@@ -22,7 +28,11 @@
 import { ref } from 'vue';
 
 export default { 
-    setup(props, context) {
+    emits: [
+        'add-todo',
+    ],
+
+    setup(props, { emit }) {
         const todo = ref(''); // to-do 내용
         const hasError = ref(false); // 공백 입력 방지 에러 체크 변수
         
@@ -32,7 +42,7 @@ export default {
             if (todo.value === '') {
                 hasError.value = true;
             } else {
-                context.emit('add-todo', {
+                emit('add-todo', {
                     id: Date.now(),
                     subject: todo.value,
                     isCompleted: false,

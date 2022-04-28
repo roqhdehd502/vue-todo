@@ -1,7 +1,7 @@
 <!--
 작성일 : 2022.04.28
 작성자 : 부설연구소 사원 나민우
-설명 : App 메인 파일
+설명 : App 메인
 -->
 
 <template>
@@ -11,6 +11,7 @@
     </div>
 
     <div class="row">
+      <h4>등록된 할 일 : {{ todos.length }}</h4>
       <ToDoSimpleForm @add-todo="addTodo" />
     </div>
 
@@ -19,7 +20,11 @@
     </div>
     
     <div class="row">
-      <ToDoList :todos="todos" />
+      <ToDoList 
+        :todos="todos" 
+        @toggle-todo="toggleTodo" 
+        @delete-todo="deleteTodo" 
+      />
     </div>
   </div>
 </template>
@@ -28,29 +33,35 @@
 <script>
 import { ref } from 'vue';
 
-import ToDoList from './components/ToDoList.vue';
-import ToDoSimpleForm from './components/ToDoSimpleForm.vue';
+import ToDoList from './components/ToDoList.vue'; // Todo 목록 컴포넌트
+import ToDoSimpleForm from './components/ToDoSimpleForm.vue'; // Todo form 컴포넌트
 
 export default {
   components: {
-    ToDoList, // Todo 목록 컴포넌트
-    TodoSimpleForm, // Todo form 컴포넌트
+    ToDoList, 
+    ToDoSimpleForm, 
   },
 
   setup() {
-    const todos = ref([]);
+    
+    const todos = ref([]); // to-do 리스트
 
     const addTodo = (todo) => { // to-do 추가
       todos.value.push(todo);
     };
 
+    const toggleTodo = (index) => { // to-do 토글
+      todos.value[index].iscompleted = !todos.value[index].iscompleted;
+    };
+
     const deleteTodo = (index) => { // to-do 삭제
       todos.value.splice(index, 1);
-    }
+    };
 
     return {
       todos,
       addTodo,
+      toggleTodo,
       deleteTodo,
     };
   }
@@ -63,7 +74,7 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  /* color: #2c3e50; */
 }
 
 body {
