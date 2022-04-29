@@ -6,25 +6,29 @@
 
 <template>
     <form @submit="addTodo">
-        <div class="input-group mb-3">
-            <input 
-                class="form-control"
-                type="text" 
-                v-model="todo"
-                placeholder="Write Your To Do"
-            />
-            <button 
-                class="btn btn-primary" 
-                type="submit"
-            >
-                Add
-            </button>
+        <div class="d-flex">
+            <div class="flex-grow-1 mr-2">
+                <input 
+                    class="form-control"
+                    type="text" 
+                    v-model="todo"
+                    placeholder="Write Your To Do"
+                />
+            </div>
+            <div>
+                <button 
+                    class="btn btn-primary" 
+                    type="submit"
+                >
+                    추가
+                </button>
+            </div>
         </div>
         <div 
-            class="form-text" 
+            class="alert alert-danger" 
             v-if="hasError"
         >
-            <h5>내용을 입력해주세요.</h5>
+            내용을 입력해주세요.
         </div>
     </form>
 </template>

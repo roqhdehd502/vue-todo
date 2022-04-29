@@ -17,36 +17,60 @@
         v-model="searchTodo"
         placeholder="검색"
       />
-      <span class="input-group-text">등록된 할 일 : {{ todos.length }}</span>
+      
     </div><hr />
 
-    <ToDoSimpleForm @add-todo="addTodo" />
+    <div class="row"> 
+      <h6>
+        등록된 할 일 : {{ todos.length }}
+      </h6>
+      <ToDoSimpleForm @add-todo="addTodo" />
+    </div>
 
-    <!-- <div v-if="!todos.length">
-      추가된 할 일이 없습니다.
-    </div> -->
-    <div class="small" v-if="!filteredTodos.length">
+    <div class="small" v-if="!todos.length">
       추가된 할 일이 없습니다.
     </div>
     
     <div class="row">
-      <!-- <ToDoList 
+      <ToDoList 
         :todos="todos" 
         @toggle-todo="toggleTodo" 
         @delete-todo="deleteTodo" 
-      /> -->
-      <ToDoList 
-        :todos="filteredTodos" 
-        @toggle-todo="toggleTodo" 
-        @delete-todo="deleteTodo" 
       />
+    </div><hr />
+
+    <div class="row">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li v-if="currentPage !== 1" class="page-item">
+            <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
+              Prev
+            </a>
+          </li>
+          <li 
+            v-for="page in numberOfPages" 
+            :key="page"
+            class="page-item"
+            :class="currentPage === page ? 'active' : ''"
+          >
+            <a class="page-link page-cursor" @click="getTodos(page)">
+              {{ page }}
+            </a>
+          </li>
+          <li v-if="numberOfPages !== currentPage" class="page-item">
+            <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
+              Next
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </template>
 
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import axios from 'axios';
 
@@ -60,26 +84,53 @@ export default {
   },
 
   setup() {
+    const numberOfTodos = ref(0); // to-do 페이징
+    let limitInPage = 5;
+    const currentPage = ref(1);
+
+    const numberOfPages = computed(() => {
+      return Math.ceil(numberOfTodos.value / limitInPage);
+    });
+
+    const searchTodo = ref(''); // 검색할 to-do 리스트 키워드 
+    // const filteredTodos = computed(() => { // 필터링하여 to-do 리스트 검색
+    //   if(searchTodo.value) {
+    //     return todos.value.filter(todo => {
+    //       return todo.subject.includes(searchTodo.value);
+    //     });
+    //   }
+    //   return todos.value;
+    // }); 
+    
     const todos = ref([]); // to-do 리스트
-    const getTodos = async () => {
+    const getTodos = async (page = currentPage.value) => {
+      currentPage.value = page;
       try {
-        const res =  await axios.get('http://localhost:3000/todos',);
+        const res =  await axios.get(
+          `http://localhost:3000/todos?_sort=id&_order=desc&subject_like=${searchTodo.value}&_page=${currentPage.value}&_limit=${limitInPage}`
+        );
+        numberOfTodos.value = res.headers['x-total-count'];
         todos.value = res.data;
       } catch(err) {
-        alert("오류로 인해 불러올 수 없습니다!");
+        alert('오류로 인해 불러올 수 없습니다!');
       }
     }
+
     getTodos();
+
+    watch(searchTodo, () => { // to-do 리스트 검색
+      getTodos(1);
+    });
 
     const addTodo = async (todo) => { // to-do 추가
       try {
-        const res = await axios.post('http://localhost:3000/todos', {
+        await axios.post('http://localhost:3000/todos', {
           subject: todo.subject,
           completed: todo.isCompleted,
         });
-        todos.value.push(res.data);
+        getTodos(1);
       } catch(err) {
-        alert("오류로 인해 추가할 수 없습니다!");
+        alert('오류로 인해 추가할 수 없습니다!');
       }
     };
 
@@ -87,9 +138,9 @@ export default {
       const getId = todos.value[index].id;
       try {
         await axios.delete('http://localhost:3000/todos/' + getId);
-        todos.value.splice(index, 1);
+        getTodos(1);
       } catch(err) {
-        alert("오류로 인해 삭제할 수 없습니다!");
+        alert('오류로 인해 삭제할 수 없습니다!'); // 
       }
     };
 
@@ -101,29 +152,20 @@ export default {
         });
         todos.value[index].iscompleted = !todos.value[index].iscompleted;
       } catch(err) {
-        alert("오류로 인해 삭제할 수 없습니다!");
+        alert('오류로 인해 체크할 수 없습니다!'); // 
       }
     };
 
-    const searchTodo = ref(''); // 검색할 to-do 리스트 키워드
-
-    const filteredTodos = computed(() => { // 필터링하여 to-do 리스트 검색
-      if(searchTodo.value) {
-        return todos.value.filter(todo => {
-          return todo.subject.includes(searchTodo.value);
-        });
-      }
-
-      return todos.value;
-    }); 
-
     return {
       todos,
+      getTodos,
       addTodo,
       deleteTodo,
       toggleTodo,
       searchTodo,
-      filteredTodos,
+      // filteredTodos,
+      numberOfPages,
+      currentPage,
     };
   }
 }
@@ -139,5 +181,9 @@ export default {
 
 body {
   margin: 0;
+}
+
+.page-cursor {
+  cursor: pointer;
 }
 </style>
