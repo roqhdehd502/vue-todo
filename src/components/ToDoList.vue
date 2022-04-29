@@ -6,31 +6,34 @@
 
 <template>
     <div 
-      class="card" 
+      class="row"
       v-for="(todo, index) in todos" 
       :key="todo.id" 
     >
-      <span class="column">
+      <div class="col-3">
         <input 
+          class="form-check-input mt-0"
           type="checkbox" 
           v-model="todo.isCompleted" 
           @change="toggleTodo(index)"
         />
-      </span>
-      <span class="column">
+      </div>
+
+      <div class="col-3">
         <label :class="{ check: todo.isCompleted }">
           {{ todo.subject }}
         </label>
-      </span>
-      <span class="column">
+      </div>
+
+      <div class="col-3">
         <button 
-          class="delete-button" 
+          class="btn btn-warning" 
           type="button" 
           @click="deleteTodo(index)"
         >
           Delete
         </button>
-      </span>
+      </div>
     </div>
 </template>
 
@@ -39,8 +42,8 @@
 export default {
     props: {
         todos: {
-            type: Array,
-            required: true,
+          type: Array,
+          required: true,
         }
     },
 
@@ -68,5 +71,8 @@ export default {
 
 
 <style>
-
+.check {
+  text-decoration: line-through;
+  color: gray;
+}
 </style>

@@ -6,19 +6,24 @@
 
 <template>
     <form @submit="addTodo">
-        <div>
+        <div class="input-group mb-3">
             <input 
-            type="text" 
-            v-model="todo"
-            placeholder="Write Your To Do"
+                class="form-control"
+                type="text" 
+                v-model="todo"
+                placeholder="Write Your To Do"
             />
             <button 
-            type="submit"
+                class="btn btn-primary" 
+                type="submit"
             >
-            Add +
+                Add
             </button>
         </div>
-        <div class="error-message" v-if="hasError">
+        <div 
+            class="form-text" 
+            v-if="hasError"
+        >
             <h5>내용을 입력해주세요.</h5>
         </div>
     </form>

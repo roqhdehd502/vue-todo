@@ -6,27 +6,26 @@
 
 <template>
   <div class="container">
-    <div>
-      <h1 class="title">To-Do-List</h1>
+    <div class="row">
+      <h1>To-Do-List</h1>
     </div>
 
     <div class="row">
       <input
+        class="form-control"
         type="text"
         v-model="searchTodo"
         placeholder="검색"
       />
-      <h4>등록된 할 일 : {{ todos.length }}</h4>
+      <span class="input-group-text">등록된 할 일 : {{ todos.length }}</span>
     </div><hr />
 
-    <div class="row">
-      <ToDoSimpleForm @add-todo="addTodo" />
-    </div>
+    <ToDoSimpleForm @add-todo="addTodo" />
 
     <!-- <div v-if="!todos.length">
       추가된 할 일이 없습니다.
     </div> -->
-    <div v-if="!filteredTodos.length">
+    <div class="small" v-if="!filteredTodos.length">
       추가된 할 일이 없습니다.
     </div>
     
@@ -49,6 +48,8 @@
 <script>
 import { ref, computed } from 'vue';
 
+import axios from 'axios';
+
 import ToDoList from './components/ToDoList.vue'; // Todo 목록 컴포넌트
 import ToDoSimpleForm from './components/ToDoSimpleForm.vue'; // Todo form 컴포넌트
 
@@ -60,17 +61,48 @@ export default {
 
   setup() {
     const todos = ref([]); // to-do 리스트
+    const getTodos = async () => {
+      try {
+        const res =  await axios.get('http://localhost:3000/todos',);
+        todos.value = res.data;
+      } catch(err) {
+        alert("오류로 인해 불러올 수 없습니다!");
+      }
+    }
+    getTodos();
 
-    const addTodo = (todo) => { // to-do 추가
-      todos.value.push(todo);
+    const addTodo = async (todo) => { // to-do 추가
+      try {
+        const res = await axios.post('http://localhost:3000/todos', {
+          subject: todo.subject,
+          completed: todo.isCompleted,
+        });
+        todos.value.push(res.data);
+      } catch(err) {
+        alert("오류로 인해 추가할 수 없습니다!");
+      }
     };
 
-    const toggleTodo = (index) => { // to-do 토글
-      todos.value[index].iscompleted = !todos.value[index].iscompleted;
+    const deleteTodo = async (index) => { // to-do 삭제
+      const getId = todos.value[index].id;
+      try {
+        await axios.delete('http://localhost:3000/todos/' + getId);
+        todos.value.splice(index, 1);
+      } catch(err) {
+        alert("오류로 인해 삭제할 수 없습니다!");
+      }
     };
 
-    const deleteTodo = (index) => { // to-do 삭제
-      todos.value.splice(index, 1);
+    const toggleTodo = async (index) => { // to-do 토글
+      const getId = todos.value[index].id;
+      try {
+        await axios.patch('http://localhost:3000/todos/' + getId, {
+          isCompleted: !todos.value[index].iscompleted
+        });
+        todos.value[index].iscompleted = !todos.value[index].iscompleted;
+      } catch(err) {
+        alert("오류로 인해 삭제할 수 없습니다!");
+      }
     };
 
     const searchTodo = ref(''); // 검색할 to-do 리스트 키워드
@@ -88,8 +120,8 @@ export default {
     return {
       todos,
       addTodo,
-      toggleTodo,
       deleteTodo,
+      toggleTodo,
       searchTodo,
       filteredTodos,
     };
@@ -103,51 +135,9 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* color: #2c3e50; */
 }
 
 body {
   margin: 0;
-}
-
-.container {
-  text-align: center;
-}
-
-.row {
-  padding: 10px;
-  margin: 10px 0px 10px 0px;
-}
-
-.column {
-  padding: 10px;
-  margin: 0px 10px 0px 10px;
-}
-
-.title {
-  background-color: beige;
-}
-
-.error-message {
-  color: red;
-}
-
-.card {
-  margin: 20px;
-  border: 1px solid beige;
-  border-radius: 5px;
-  background-color: beige;
-  width: 300px; height: auto;
-}
-
-.check {
-  text-decoration: line-through;
-  color: gray;
-}
-
-.delete-button {
-  background-color: red; color: white;
-  border: 1px solid red; border-radius: 5px;
-  padding: 5px;
 }
 </style>
