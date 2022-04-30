@@ -4,19 +4,24 @@
 설명 : Todo 리스트 불러오기 및 수정, 삭제
 -->
 
+
 <template>
     <div 
       v-for="(todo, index) in todos" 
       :key="todo.id" 
       class="card mt-2"
     >
-      <div class="card-body p-2 d-flex align-items-center">
+      <div 
+        class="card-body p-2 d-flex align-items-center"
+        @click="moveToPage(todo.id)"
+      >
         <div class="form-check flex-glow-1">
           <input 
             class="form-check-input"
             type="checkbox" 
             v-model="todo.isCompleted" 
-            @change="toggleTodo(index)"
+            @change="toggleTodo(index, $event)"
+            @click.stop
           />
         </div>
         <div class="container">
@@ -28,22 +33,38 @@
             </div>
             <div class="col">
               <button 
-                class="btn btn-danger" 
+                class="btn btn-success" 
                 type="button" 
-                @click="deleteTodo(index)"
+                @click.stop="openModal(todo.id)"
               >
-                삭제
+                ...
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <Modal 
+      v-if="showModal" 
+      @close="closeModal" 
+      @delete="deleteTodo"
+    />
 </template>
 
 
 <script>
+import { ref } from 'vue';
+
+import Modal from '@/components/InfoModal.vue'; // 모달 컴포넌트
+
+import router from '@/router'; // 라우터
+
 export default {
+    components: {
+      Modal
+    },
+
     props: {
         todos: {
           type: Array,
@@ -57,24 +78,50 @@ export default {
     ],
 
     setup(props, { emit }) {
-      const toggleTodo = (index) => { // to-do 토글
-        emit('toggle-todo', index);
+      const moveToPage = (getId) => { // to-do 상세 페이지 이동
+        router.push({
+          name: 'Todo',
+          params: {
+            id: getId
+          }
+        });
+      }
+
+      const toggleTodo = (index, event) => { // to-do 토글
+        emit('toggle-todo', index, event.target.checked);
       };
       
-      const deleteTodo = (index) => { // to-do 삭제
-        emit('delete-todo', index);
+      const deleteTodo = () => { // to-do 삭제
+        emit('delete-todo', infoId.value);
+        showModal.value = false;
+        infoId.value = null;
+      };
+
+      const showModal = ref(false);
+      const infoId = ref(null);
+      const openModal = (id) => {
+        infoId.value = id;
+        showModal.value = true;
+      };
+      const closeModal = () => {
+        infoId.value = null;
+        showModal.value = false;
       };
 
       return {
+        moveToPage,
         toggleTodo,
         deleteTodo,
+        showModal,
+        openModal,
+        closeModal,
       }
     }
 }
 </script>
 
 
-<style>
+<style scoped>
 .check {
   text-decoration: line-through;
   color: gray;
