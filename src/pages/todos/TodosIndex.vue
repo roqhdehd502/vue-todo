@@ -31,8 +31,8 @@
       :todos="todos" 
       @toggle-todo="toggleTodo" 
       @delete-todo="deleteTodo" 
-      @update-todo="updateTodo" 
-    /><hr />
+      
+    /><hr /><!-- @update-todo="updateTodo" --> 
 
     <nav>
       <ul class="pagination justify-content-center">
@@ -163,6 +163,13 @@ export default {
       }
     };
 
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast,
+    } = useToast(); // 변경 사항시 알림
+
     // const updateTodo = async (index, subject) => { // to-do 업데이트
     //   const getId = todos.value[index].id;
     //   try {
@@ -176,27 +183,20 @@ export default {
     //   }
     // };
 
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast,
-    } = useToast(); // 변경 사항시 알림
-
     return {
-      searchTodoKeyup,
+      numberOfPages,
+      currentPage,
       todos,
+      getTodos,
       addTodo,
       deleteTodo,
       toggleTodo,
-      // updateTodo,
       searchTodo,
-      numberOfPages,
-      currentPage,
-      getTodos,
+      searchTodoKeyup,
       toastMessage,
       toastAlertType,
       showToast,
+      // updateTodo,
     };
   }
 }

@@ -11,7 +11,13 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            <slot name="modalTitle"></slot>           
+            <slot name="modalTitle">
+              <!-- <button 
+                type="button" 
+                class="btn-close"
+                @click="onClose"
+              ></button> -->
+            </slot>           
           </h5>
         </div>
         <div class="modal-body">
@@ -30,9 +36,18 @@
 export default {
   setup() {
     return {
-
+    
     }
   }
+  // setup(props, { emit }) {
+  //   const onClose = () => {
+  //      emit('close');
+  //   }
+
+  //   return {
+  //     onClose,
+  //   }
+  // }
 }
 </script>
 

@@ -11,7 +11,10 @@
       :key="todo.id" 
       class="card mt-2"
     >
-      <div class="card-body p-2 d-flex align-items-center todo-cursor">
+      <div 
+        class="card-body p-2 d-flex align-items-center todo-cursor"
+        @click="moveToPage(todo.id)"
+      >
         <div class="flex-glow-1">
           <input 
             class="ml-2 mr-2"
@@ -32,7 +35,7 @@
               <button 
                 class="btn btn-success btm-sm" 
                 type="button" 
-                @click.stop="openModal(todo)"
+                @click.stop="openModal(todo.id)"
               >
                 ...
               </button>
@@ -55,6 +58,8 @@
 <script>
 import { ref } from 'vue';
 
+import router from '@/router';
+
 import TodoDetail from '@/components/todos/TodoDetail.vue'; // Todo 상세 컴포넌트
 
 export default {
@@ -76,6 +81,15 @@ export default {
   ],
 
   setup(props, { emit }) {
+    const moveToPage = (getId) => { // to-do 상세 페이지 이동
+      router.push({
+        name: 'Todo',
+        params: {
+          id: getId
+        }
+      });
+    }
+
     const infoId = ref(null); // to-do id
     //const infoSubject = ref(null); // to-do id
 
@@ -106,6 +120,7 @@ export default {
     // };
 
     return {
+      moveToPage,
       showModal,
       openModal,
       closeModal,
