@@ -69,21 +69,6 @@
       "subject": "13",
       "completed": false,
       "id": 16
-    },
-    {
-      "subject": "14",
-      "completed": false,
-      "id": 17
-    }
-  ],
-  "users": [
-    {
-      "userId": "user0912",
-      "userPw": "1q2w3e4r!",
-      "userName": "홍길동",
-      "userEmail": "user0912@naver.com",
-      "userNickName": "홍서자",
-      "userImage": "https://image.fmkorea.com/files/attach/new2/20220327/486263/4361148003/4470695736/1b6432f7d532470d8a301066002401c7.png"
     }
   ]
 }

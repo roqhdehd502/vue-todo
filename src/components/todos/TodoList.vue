@@ -1,7 +1,7 @@
 <!--
 작성일 : 2022.04.28
 작성자 : 부설연구소 사원 나민우
-설명 : Todo 리스트 불러오기 및 수정, 삭제
+설명 : Todo 리스트
 -->
 
 
@@ -12,12 +12,12 @@
       class="card mt-2"
     >
       <div 
-        class="card-body p-2 d-flex align-items-center"
+        class="card-body p-2 d-flex align-items-center todo-cursor"
         @click="moveToPage(todo.id)"
       >
-        <div class="form-check flex-glow-1">
+        <div class="flex-glow-1">
           <input 
-            class="form-check-input"
+            class="ml-2 mr-2"
             type="checkbox" 
             v-model="todo.isCompleted" 
             @change="toggleTodo(index, $event)"
@@ -33,7 +33,7 @@
             </div>
             <div class="col">
               <button 
-                class="btn btn-success" 
+                class="btn btn-success btm-sm" 
                 type="button" 
                 @click.stop="openModal(todo.id)"
               >
@@ -44,19 +44,21 @@
         </div>
       </div>
     </div>
-
-    <Modal 
-      v-if="showModal" 
-      @close="closeModal" 
-      @delete="deleteTodo"
-    />
+    
+    <teleport to='#modal'>
+      <Modal 
+        v-if="showModal" 
+        @close="closeModal" 
+        @delete="deleteTodo"
+      />
+    </teleport>
 </template>
 
 
 <script>
 import { ref } from 'vue';
 
-import Modal from '@/components/InfoModal.vue'; // 모달 컴포넌트
+import Modal from '@/components/todos/TodoModal.vue'; // Todo 모달 컴포넌트
 
 import router from '@/router'; // 라우터
 
@@ -125,5 +127,8 @@ export default {
 .check {
   text-decoration: line-through;
   color: gray;
+}
+.todo-cursor {
+  cursor: pointer
 }
 </style>

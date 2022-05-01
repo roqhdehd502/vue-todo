@@ -1,16 +1,13 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <router-link class="navbar-brand" :to="{ name: 'Home' }">
-      Coin Trading Todo List
+  <nav class="navbar navbar-dark bg-success">
+    <router-link 
+      :to="{ name: 'TodosList' }"
+      class="navbar-brand" 
+      style="padding-left: 10px;"
+    >
+      Coin Todos 
     </router-link>
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <router-link class="nav-link" :to="{ name: 'TodosList' }">
-          Todos
-        </router-link>
-      </li>
-    </ul>
-  </nav>
+  </nav><br />
 
   <div class="container">
     <router-view />
@@ -26,8 +23,10 @@ export default {
 
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap');
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

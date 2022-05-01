@@ -6,59 +6,57 @@
 
 
 <template>
-  <div class="container">
-    <div class="row">
-      <input
-        class="form-control"
-        type="text"
-        v-model="searchTodo"
-        placeholder="Todo 검색"
-        @keyup.enter="searchTodoKeyup"
-      />  
+  <div>
+    <div class="card">
+      <CoinList />
     </div><hr />
+
+    <input
+      class="form-control"
+      type="text"
+      v-model="searchTodo"
+      placeholder="검색할 Todo 입력"
+      @keyup.enter="searchTodoKeyup"
+    /><br />
 
     <div class="row"> 
-      <ToDoSimpleForm @add-todo="addTodo" />
-    </div>
+      <TodoForm @add-todo="addTodo" />
+    </div><br />
 
-    <div class="small" v-if="!todos.length">
+    <div v-if="!todos.length">
       추가된 할 일이 없습니다.
     </div>
-    
-    <div class="row">
-      <ToDoList 
-        :todos="todos" 
-        @toggle-todo="toggleTodo" 
-        @delete-todo="deleteTodo" 
-      />
-    </div><hr />
 
-    <div class="row">
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-          <li v-if="currentPage !== 1" class="page-item">
-            <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
-              Prev
-            </a>
-          </li>
-          <li 
-            v-for="page in numberOfPages" 
-            :key="page"
-            class="page-item"
-            :class="currentPage === page ? 'active' : ''"
-          >
-            <a class="page-link page-cursor" @click="getTodos(page)">
-              {{ page }}
-            </a>
-          </li>
-          <li v-if="numberOfPages !== currentPage" class="page-item">
-            <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
-              Next
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <ToDoList 
+      :todos="todos" 
+      @toggle-todo="toggleTodo" 
+      @delete-todo="deleteTodo" 
+    /><hr />
+
+    <nav>
+      <ul class="pagination justify-content-center">
+        <li v-if="currentPage !== 1" class="page-item">
+          <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
+            Prev
+          </a>
+        </li>
+        <li 
+          v-for="page in numberOfPages" 
+          :key="page"
+          class="page-item"
+          :class="currentPage === page ? 'active' : ''"
+        >
+          <a class="page-link page-cursor" @click="getTodos(page)">
+            {{ page }}
+          </a>
+        </li>
+        <li v-if="numberOfPages !== currentPage" class="page-item">
+          <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
+            Next
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
   
   <transition name="fade">
@@ -76,21 +74,23 @@ import { ref, computed, watch } from 'vue';
 
 import axios from 'axios';
 
-import ToDoList from '@/components/ToDoList.vue'; // Todo 목록 컴포넌트
-import ToDoSimpleForm from '@/components/ToDoSimpleForm.vue'; // Todo form 컴포넌트
-import Toast from '@/components/InfoUpdateToast.vue'; // 변경사항 알림 컴포넌트
+import CoinList from '@/components/coins/CoinMarketPrice.vue' // 코인 시세 리스트 컴포넌트
+import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌트
+import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
+import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
 
-import { useToast } from '@/composables/toast'; // 변경사항 알림 컴포저블
+import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
   components: {
+    CoinList,
     ToDoList, 
-    ToDoSimpleForm, 
+    TodoForm, 
     Toast,
   },
 
   setup() {
-    let limitInPage = 5; // to-do 페이징
+    let limitInPage = 3; // to-do 페이징
     const numberOfTodos = ref(0); 
     const currentPage = ref(1);
     const numberOfPages = computed(() => {

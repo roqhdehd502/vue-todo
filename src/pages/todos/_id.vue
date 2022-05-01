@@ -76,9 +76,9 @@ import { useRoute, useRouter } from 'vue-router';
 import _ from 'lodash';
 import axios from 'axios';
 
-import Toast from '@/components/InfoUpdateToast.vue'; // 변경사항 알림 컴포넌트
+import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
 
-import { useToast } from '@/composables/toast'; // 변경사항 알림 컴포저블
+import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
   components: {

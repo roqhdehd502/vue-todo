@@ -1,7 +1,7 @@
 <!-- 
 작성일 : 2022.04.30
 작성자 : 부설연구소 사원 나민우
-설명 : to-do 페이지 index
+설명 : 모달 컴포넌트
 -->
 
 
@@ -10,7 +10,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Todo 제목</h5>
+          <h5 class="modal-title">
+            <slot name="modalTitle"></slot>           
+          </h5>
           <button 
             type="button" 
             class="btn-close"
@@ -18,29 +20,10 @@
           ></button>
         </div>
         <div class="modal-body">
-          Todo 상세 내용
+          <slot name="modalBody"></slot>
         </div>
         <div class="modal-footer">
-          <button 
-            type="button"
-            class="btn btn-secondary"
-            @click="onClose"
-          >
-            닫기
-          </button>
-          <button 
-            type="button" 
-            class="btn btn-primary"
-          >
-            수정
-          </button>
-          <button 
-            type="button" 
-            class="btn btn-danger"
-            @click="onDelete"
-          >
-            삭제
-          </button>
+          <slot name="modalFooter"></slot>
         </div>
       </div>
     </div>
@@ -55,13 +38,8 @@ export default {
       emit('close');
     }
 
-    const onDelete = () => {
-      emit('delete');
-    }
-
     return {
       onClose,
-      onDelete,
     }
   }
 }

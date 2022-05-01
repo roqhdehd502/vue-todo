@@ -1,7 +1,7 @@
 /**
  * 작성일 : 2022.04.30
  * 작성자 : 부설연구소 사원 나민우
- * 설명 : 변경 사항 알림 모듈
+ * 설명 : 토스트 컴포저블
  */
 
 
@@ -24,7 +24,7 @@ export const useToast = () => {
     }, 3000);
   }
 
-  onUnmounted(()=> { // 메모리 누수 방지
+  onUnmounted(()=> {
     clearTimeout(timeout.value);
   });
 
