@@ -8,8 +8,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import TodosList from '../pages/todos/TodosIndex.vue'; // todos 목록 페이지
-import Todo from '../pages/todos/_id.vue'; // todo 수정 페이지
-
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,11 +16,6 @@ const router = createRouter({
       path: '/',
       name: 'TodosList',
       component: TodosList,
-    },
-    {
-      path: '/:id',
-      name: 'Todo',
-      component: Todo,
     }
   ]
 });

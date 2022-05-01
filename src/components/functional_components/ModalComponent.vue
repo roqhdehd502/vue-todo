@@ -13,11 +13,6 @@
           <h5 class="modal-title">
             <slot name="modalTitle"></slot>           
           </h5>
-          <button 
-            type="button" 
-            class="btn-close"
-            @click="onClose"
-          ></button>
         </div>
         <div class="modal-body">
           <slot name="modalBody"></slot>
@@ -33,13 +28,9 @@
 
 <script>
 export default {
-  setup(props, { emit }) {
-    const onClose = () => {
-      emit('close');
-    }
-
+  setup() {
     return {
-      onClose,
+
     }
   }
 }

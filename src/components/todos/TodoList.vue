@@ -11,10 +11,7 @@
       :key="todo.id" 
       class="card mt-2"
     >
-      <div 
-        class="card-body p-2 d-flex align-items-center todo-cursor"
-        @click="moveToPage(todo.id)"
-      >
+      <div class="card-body p-2 d-flex align-items-center todo-cursor">
         <div class="flex-glow-1">
           <input 
             class="ml-2 mr-2"
@@ -35,7 +32,7 @@
               <button 
                 class="btn btn-success btm-sm" 
                 type="button" 
-                @click.stop="openModal(todo.id)"
+                @click.stop="openModal(todo)"
               >
                 ...
               </button>
@@ -46,11 +43,11 @@
     </div>
     
     <teleport to='#modal'>
-      <Modal 
+      <TodoDetail 
         v-if="showModal" 
         @close="closeModal" 
         @delete="deleteTodo"
-      />
+      /><!-- @update="updateTodo(index, $event)" -->
     </teleport>
 </template>
 
@@ -58,67 +55,65 @@
 <script>
 import { ref } from 'vue';
 
-import Modal from '@/components/todos/TodoModal.vue'; // Todo 모달 컴포넌트
-
-import router from '@/router'; // 라우터
+import TodoDetail from '@/components/todos/TodoDetail.vue'; // Todo 상세 컴포넌트
 
 export default {
-    components: {
-      Modal
-    },
+  components: {
+    TodoDetail
+  },
 
-    props: {
-        todos: {
-          type: Array,
-          required: true,
-        }
-    },
-
-    emits: [
-      'toggle-todo',
-      'delete-todo',
-    ],
-
-    setup(props, { emit }) {
-      const moveToPage = (getId) => { // to-do 상세 페이지 이동
-        router.push({
-          name: 'Todo',
-          params: {
-            id: getId
-          }
-        });
-      }
-
-      const toggleTodo = (index, event) => { // to-do 토글
-        emit('toggle-todo', index, event.target.checked);
-      };
-      
-      const deleteTodo = () => { // to-do 삭제
-        emit('delete-todo', infoId.value);
-        showModal.value = false;
-        infoId.value = null;
-      };
-
-      const showModal = ref(false);
-      const infoId = ref(null);
-      const openModal = (id) => {
-        infoId.value = id;
-        showModal.value = true;
-      };
-      const closeModal = () => {
-        infoId.value = null;
-        showModal.value = false;
-      };
-
-      return {
-        moveToPage,
-        toggleTodo,
-        deleteTodo,
-        showModal,
-        openModal,
-        closeModal,
-      }
+  props: {
+    todos: {
+      type: Array,
+      required: true,
     }
+  },
+
+  emits: [
+    'toggle-todo',
+    'delete-todo',
+    //'update-todo',
+  ],
+
+  setup(props, { emit }) {
+    const infoId = ref(null); // to-do id
+    //const infoSubject = ref(null); // to-do id
+
+    const showModal = ref(false); // to-do 모달
+    const openModal = (todo) => {
+      infoId.value = todo.id;
+      //infoSubject.value = todo.subject;
+      showModal.value = true;
+    };
+    const closeModal = () => {
+      infoId.value = null;
+      //infoSubject.value = null;
+      showModal.value = false;
+    };
+    
+    const deleteTodo = () => { // to-do 삭제
+      emit('delete-todo', infoId.value);
+      showModal.value = false;
+      infoId.value = null;
+    };
+
+    const toggleTodo = (index, event) => { // to-do 토글
+      emit('toggle-todo', index, event.target.checked);
+    };
+
+    // const updateTodo = (index, event) => { // to-do 업데이트
+    //   emit('update-todo', index, event.target.value);
+    // };
+
+    return {
+      showModal,
+      openModal,
+      closeModal,
+      deleteTodo,
+      toggleTodo,
+      // updateTodo,
+    }
+  }
 }
 </script>
 
@@ -128,7 +123,7 @@ export default {
   text-decoration: line-through;
   color: gray;
 }
-.todo-cursor {
-  cursor: pointer
+.todo-cursor:hover {
+  background-color: rgba(20, 20, 20, 0.15);
 }
 </style>

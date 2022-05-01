@@ -46,7 +46,7 @@ export default {
     const getCoins = async () => {
       try {
         const res = await axios.get('https://api.coinpaprika.com/v1/tickers');
-        coins.value = res.data.slice(0, 2); // 비트코인, 이더리움 정보만 불러오기
+        coins.value = res.data.slice(0, 3); // 상위 3개 코인 정보만 불러오기
         loading.value = true;
       } catch(err) {
         alert('오류로 인해 불러올 수 없습니다!');

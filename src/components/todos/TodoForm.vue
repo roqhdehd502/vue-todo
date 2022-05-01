@@ -14,6 +14,7 @@
           type="text" 
           v-model="todo"
           placeholder="추가할 Todo 입력"
+          maxlength="30"
         />
       </div>
       <div>
@@ -48,7 +49,6 @@ export default {
         hasError.value = true;
       } else {
         emit('add-todo', {
-            //id: Date.now(),
             subject: todo.value,
             isCompleted: false,
         });

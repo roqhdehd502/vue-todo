@@ -31,6 +31,7 @@
       :todos="todos" 
       @toggle-todo="toggleTodo" 
       @delete-todo="deleteTodo" 
+      @update-todo="updateTodo" 
     /><hr />
 
     <nav>
@@ -108,7 +109,7 @@ export default {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         getTodos(1);
-      }, 1000);
+      }, 100);
     });
     
     const todos = ref([]); // to-do 리스트
@@ -130,7 +131,7 @@ export default {
       try {
         await axios.post('http://localhost:3000/todos', {
           subject: todo.subject,
-          completed: todo.isCompleted,
+          isCompleted: todo.isCompleted,
         });
         getTodos(1);
         triggerToast('추가 되었습니다.');
@@ -141,7 +142,7 @@ export default {
 
     const deleteTodo = async (getId) => { // to-do 삭제
       try {
-        await axios.delete('http://localhost:3000/todos/' + getId);
+        await axios.delete(`http://localhost:3000/todos/${getId}`);
         getTodos(1);
         triggerToast('삭제 되었습니다.');
       } catch(err) {
@@ -152,15 +153,28 @@ export default {
     const toggleTodo = async (index, checked) => { // to-do 토글
       const getId = todos.value[index].id;
       try {
-        await axios.patch('http://localhost:3000/todos/' + getId, {
+        await axios.patch(`http://localhost:3000/todos/${getId}`, {
           isCompleted: checked
         });
         todos.value[index].iscompleted = checked;
         triggerToast('변경 되었습니다.');
       } catch(err) {
-        triggerToast('오류로 인해 체크할 수 없습니다!', 'danger');
+        triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
       }
     };
+
+    // const updateTodo = async (index, subject) => { // to-do 업데이트
+    //   const getId = todos.value[index].id;
+    //   try {
+    //     await axios.put(`http://localhost:3000/todos/${getId}`, {
+    //       subject: subject
+    //     });
+    //     todos.value[index].subject = subject;
+    //     triggerToast('변경 되었습니다.');
+    //   } catch(err) {
+    //     triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
+    //   }
+    // };
 
     const {
       showToast,
@@ -171,18 +185,18 @@ export default {
 
     return {
       searchTodoKeyup,
-      
       todos,
       addTodo,
       deleteTodo,
       toggleTodo,
+      // updateTodo,
       searchTodo,
       numberOfPages,
       currentPage,
       getTodos,
       toastMessage,
       toastAlertType,
-      showToast,    
+      showToast,
     };
   }
 }
