@@ -9,7 +9,7 @@
   <div>
     <div class="card">
       <CoinList />
-    </div><hr />
+    </div><br />
 
     <input
       class="form-control"
@@ -32,7 +32,7 @@
       @toggle-todo="toggleTodo" 
       @delete-todo="deleteTodo" 
       
-    /><hr /><!-- @update-todo="updateTodo" --> 
+    /><br /><!-- @update-todo="updateTodo" --> 
 
     <nav>
       <ul class="pagination justify-content-center">

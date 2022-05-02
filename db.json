@@ -2,7 +2,7 @@
   "todos": [
     {
       "subject": "이더리움 2800에서 익절하기",
-      "isCompleted": false,
+      "isCompleted": true,
       "id": 1
     },
     {
@@ -19,6 +19,16 @@
       "subject": "일론 머스크 트위터 업뎃확인!",
       "isCompleted": true,
       "id": 4
+    },
+    {
+      "subject": "나스닥 현 상황 확인",
+      "isCompleted": false,
+      "id": 5
+    },
+    {
+      "subject": "이더리움 2.0 관련 뉴스 보기",
+      "isCompleted": false,
+      "id": 6
     }
   ]
 }

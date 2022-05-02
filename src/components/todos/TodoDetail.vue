@@ -68,12 +68,9 @@ export default {
     Modal
   },
 
-  props: {
-    todos: {
-      type: Array,
-      required: true,
-    }
-  },
+  // props: {
+    
+  // },
 
   emits: [
     //'update',

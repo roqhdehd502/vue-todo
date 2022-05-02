@@ -31,13 +31,15 @@
                 {{ todo.subject }}
               </label>
             </div>
-            <div class="col">
+            <div class="col" style="text-align:right">
               <button 
-                class="btn btn-success btm-sm" 
+                class="btn btn-danger btm-sm" 
                 type="button" 
                 @click.stop="openModal(todo.id)"
               >
-                ...
+                <span class="material-icons">
+                  delete_outline
+                </span>
               </button>
             </div>
           </div>
@@ -91,11 +93,11 @@ export default {
     }
 
     const infoId = ref(null); // to-do id
-    //const infoSubject = ref(null); // to-do id
+    //const infoSubject = ref(null); // to-do subject
 
     const showModal = ref(false); // to-do 모달
-    const openModal = (todo) => {
-      infoId.value = todo.id;
+    const openModal = (getId) => {
+      infoId.value = getId;
       //infoSubject.value = todo.subject;
       showModal.value = true;
     };
@@ -139,6 +141,7 @@ export default {
   color: gray;
 }
 .todo-cursor:hover {
+  cursor: pointer;
   background-color: rgba(20, 20, 20, 0.15);
 }
 </style>
