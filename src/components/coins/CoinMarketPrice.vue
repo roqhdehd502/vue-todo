@@ -14,26 +14,36 @@
     >
       <span class="visually-hidden">Loading...</span>
     </div>
+
     <div v-show="loading === true">
       <div @click="reloading" class="refresh">        
-        <span class="material-icons">
+        <span class="material-icons refresh-icon">
           refresh
         </span>
         <span>
-          {{ timer }}초후 새로고침
+          {{ timer }}초 후 새로고침
         </span>
       </div>
       <table class="table table-striped justify-content-center">
         <thead>
-          <th scope="col">Name</th>
-          <th scope="col">Symbol</th>
-          <th scope="col">Price(원)</th>
+          <th scope="col" class="th-padding-start">자산</th>
+          <th scope="col" class="th-padding-end">시세</th>
+          <th scope="col" class="th-padding-end">변동률(일)</th>
         </thead>
         <tbody>
           <tr v-for="coin in coins" :key="coin.id">
-            <th scope="row">{{ coin.name }}</th>
-            <td>{{ coin.symbol }}</td>
-            <td>{{ coin.quotes.KRW.price }}</td>
+            <th scope="row">
+              {{ coin.name }}({{ coin.symbol }})
+            </th>
+            <td class="td-align-end">
+              {{ priceFormatting(coin.quotes.KRW.price) }}&nbsp;원
+            </td>
+            <td 
+              class="td-align-end" 
+              :class="percentChangeColor(coin.quotes.KRW.percent_change_24h)"
+            >
+              {{ coin.quotes.KRW.percent_change_24h }}&#37;
+            </td>
           </tr>
         </tbody>
       </table>
@@ -51,7 +61,6 @@ export default {
   setup() {
     const loading = ref(false); 
     const coins = ref([]);
-    const timer = ref(10);
     
     const getCoins = async () => { // coinpaprika API를 이용한 코인 정보 불러오기
       try {
@@ -64,26 +73,45 @@ export default {
       }
     }
 
+    const setTime = 5;
+    const timer = ref(setTime);
+
     setInterval(() => { // 10초 마다 코인 정보 불러오기
       getCoins();
-      timer.value = 10;
-    }, 10000);
+      timer.value = setTime;
+    }, setTime*1000);
     
     timer.value = setInterval(() => { // 코인 새로고침 타이머
-      if(timer.value === 1) { timer.value = 11; }
+      if(timer.value === 1) { timer.value = setTime+1; }
       timer.value -= 1;
     }, 1000);
 
     const reloading = () => { // 새로고침 버튼을 눌러 코인 정보 불러오기
       getCoins();
-      timer.value = 10;
-    }  
+      timer.value = setTime;
+    };
+
+    const priceFormatting = (price) => { // 코인 시세 반올림 및 포맷팅
+      return new Intl.NumberFormat('en-US').format(Math.round(price));
+    };
+
+    const percentChangeColor = (percentChange) => { // 변동률에 따른 색상 표시
+      if(percentChange > 0) {
+        return 'upper-red';
+      } else if(percentChange < 0) {
+        return 'lower-blue';
+      } else {
+        return 'maintain-black';
+      }
+    }
 
     return { 
-      timer,
-      coins,
       loading,
+      coins,
+      timer,
       reloading,
+      priceFormatting,
+      percentChangeColor,
     }
   },
 }
@@ -92,7 +120,37 @@ export default {
 
 <style scoped>
 .refresh {
+  margin-bottom: 10px;
   text-align: end;
   cursor: pointer;
+}
+
+.refresh-icon {
+  margin-right: 3px;
+}
+
+.th-padding-start {
+  padding-left: 7px;
+}
+
+.th-padding-end {
+  text-align: end;
+  padding-right: 7px;
+}
+
+.td-align-end {
+  text-align: end;
+}
+
+.upper-red {
+  color: red !important;
+}
+
+.lower-blue {
+  color: blue !important;
+}
+
+.maintain-black {
+  color: black !important;
 }
 </style>

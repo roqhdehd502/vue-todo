@@ -85,9 +85,11 @@ export default {
   components: {
     Toast
   },
+  
   setup() {
     const route = useRoute();
     const router = useRouter();
+
     const moveToTodoListPage = () => { // to-do 리스트 페이지 이동
       router.push({
         name: 'TodosList'
