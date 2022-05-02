@@ -27,13 +27,13 @@
         <thead>
           <th scope="col">Name</th>
           <th scope="col">Symbol</th>
-          <th scope="col">Price(USD)</th>
+          <th scope="col">Price(원)</th>
         </thead>
         <tbody>
           <tr v-for="coin in coins" :key="coin.id">
             <th scope="row">{{ coin.name }}</th>
             <td>{{ coin.symbol }}</td>
-            <td>{{ coin.quotes.USD.price }}</td>
+            <td>{{ coin.quotes.KRW.price }}</td>
           </tr>
         </tbody>
       </table>
@@ -55,7 +55,7 @@ export default {
     
     const getCoins = async () => { // coinpaprika API를 이용한 코인 정보 불러오기
       try {
-        const res = await axios.get('https://api.coinpaprika.com/v1/tickers');
+        const res = await axios.get('https://api.coinpaprika.com/v1/tickers?quotes=KRW');
         coins.value = res.data.slice(0, 3); // 상위 3개 코인 정보만
         loading.value = true;
       } catch(err) {
