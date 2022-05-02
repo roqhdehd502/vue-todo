@@ -75,7 +75,7 @@ import { ref, computed, watch } from 'vue';
 
 import axios from 'axios';
 
-import CoinList from '@/components/coins/CoinMarketPrice.vue' // 코인 시세 리스트 컴포넌트
+import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
 import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌트
 import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
 import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트

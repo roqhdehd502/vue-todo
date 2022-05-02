@@ -24,7 +24,12 @@
           {{ timer }}초 후 새로고침
         </span>
       </div>
-      <table class="table table-striped justify-content-center">
+      <table class="table table-striped table-hover justify-content-center">
+        <colgroup>
+          <col width="170px">
+          <col width="150px">
+          <col width="150px">
+        </colgroup>
         <thead>
           <th scope="col" class="th-padding-start">자산</th>
           <th scope="col" class="th-padding-end">시세</th>
@@ -65,7 +70,7 @@ export default {
     const getCoins = async () => { // coinpaprika API를 이용한 코인 정보 불러오기
       try {
         const res = await axios.get('https://api.coinpaprika.com/v1/tickers?quotes=KRW');
-        coins.value = res.data.slice(0, 3); // 상위 3개 코인 정보만
+        coins.value = res.data.slice(0, 5); // 상위 5개 코인 정보만
         loading.value = true;
       } catch(err) {
         alert('오류로 인해 코인정보를 불러올 수 없습니다!');
@@ -73,7 +78,7 @@ export default {
       }
     }
 
-    const setTime = 5;
+    const setTime = 5; // 자동으로 코인 정보 갱신할 시간 설정
     const timer = ref(setTime);
 
     setInterval(() => { // 10초 마다 코인 정보 불러오기

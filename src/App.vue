@@ -1,13 +1,5 @@
 <template>
-  <nav class="navbar navbar-dark bg-success">
-    <router-link 
-      :to="{ name: 'TodosList' }"
-      class="navbar-brand" 
-      style="padding-left: 10px;"
-    >
-      Coin Todos 
-    </router-link>
-  </nav><br />
+  <NavigationBar /><br />
 
   <div class="container">
     <router-view />
@@ -16,8 +8,18 @@
 
 
 <script>
-export default {
+import NavigationBar from '@/components/functional_components/NavigationBar.vue';
 
+export default {
+  components: {
+    NavigationBar,
+  },
+
+  setup() {
+    return {
+
+    }
+  }
 }
 </script>
 
