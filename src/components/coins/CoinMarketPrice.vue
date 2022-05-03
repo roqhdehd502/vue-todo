@@ -58,7 +58,7 @@
 
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import axios from 'axios';
 
@@ -66,8 +66,8 @@ export default {
   setup() {
     const loading = ref(false); 
     const coins = ref([]);
-    
-    const getCoins = async () => { // coinpaprika API를 이용한 코인 정보 불러오기
+
+    const getCoins = onMounted(async () => { // coinpaprika API 통신을 이용한 코인 정보 불러오기
       try {
         const res = await axios.get('https://api.coinpaprika.com/v1/tickers?quotes=KRW');
         coins.value = res.data.slice(0, 5); // 상위 5개 코인 정보만
@@ -76,7 +76,7 @@ export default {
         alert('오류로 인해 코인정보를 불러올 수 없습니다!');
         location.reload();
       }
-    }
+    });
 
     const setTime = 5; // 자동으로 코인 정보 갱신할 시간 설정
     const timer = ref(setTime);

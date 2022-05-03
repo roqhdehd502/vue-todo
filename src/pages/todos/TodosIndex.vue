@@ -8,7 +8,7 @@
 <template>
   <div>
     <div class="card">
-      <CoinList />
+      <CoinList v-once />
     </div><br />
 
     <input

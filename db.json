@@ -6,11 +6,6 @@
       "id": 1
     },
     {
-      "subject": "코인 트레이드 강의 보기",
-      "isCompleted": true,
-      "id": 2
-    },
-    {
       "subject": "작업증명 관련 논문 열람하기",
       "isCompleted": false,
       "id": 3
@@ -26,7 +21,7 @@
       "id": 5
     },
     {
-      "subject": "이더리움 2.0 관련 뉴스 보기",
+      "subject": "이더리움 2.0 관련 뉴스 보기!",
       "isCompleted": false,
       "id": 6
     }
@@ -37,7 +32,7 @@
       "userpw": "1q2w3e4r!",
       "userName": "홍길동",
       "nickName": "HONG",
-      "userEmail" : "hong1234@naver.com",
+      "userEmail": "hong1234@naver.com",
       "id": 1
     }
   ]
