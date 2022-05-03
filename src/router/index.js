@@ -10,6 +10,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import TodosList from '../pages/todos/TodosIndex.vue'; // todos 목록 페이지
 import Todo from '../pages/todos/_id.vue'; // todo 수정 페이지
 
+import User from '../pages/users/_id.vue'; // User 상세 페이지
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -22,6 +24,11 @@ const router = createRouter({
       path: '/:id',
       name: 'Todo',
       component: Todo,
+    },
+    {
+      path: '/user/:id',
+      name: 'User',
+      component: User,
     },
   ]
 });

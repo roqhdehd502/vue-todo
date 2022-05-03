@@ -59,14 +59,6 @@
       </div>
     </div>
   </form>
-  
-  <transition name="fade">
-    <Toast 
-      v-if="showToast" 
-      :message="toastMessage" 
-      :type="toastAlertType"
-    />
-  </transition>
 </template>
 
 
@@ -77,13 +69,11 @@ import { useRoute, useRouter } from 'vue-router';
 import _ from 'lodash';
 import axios from 'axios';
 
-import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
-
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
   components: {
-    Toast
+    
   },
   
   setup() {
@@ -107,7 +97,8 @@ export default {
         originTodo.value = { ...res.data };
         loading.value = false;
       } catch(err) {
-        triggerToast('내용을 불러올 수 없습니다!', 'danger');
+        err.value = '내용을 불러올 수 없습니다!';
+        triggerToast(err.value, 'danger');
       }
     };
     getTodo();
@@ -119,7 +110,8 @@ export default {
       try {
         todo.value.isCompleted = !todo.value.isCompleted;
       } catch(err) {
-        triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
+        err.value = '오류로 인해 변경할 수 없습니다!';
+        triggerToast(err.value, 'danger');
       }
     }
 
@@ -131,12 +123,13 @@ export default {
           isCompleted: todo.value.isCompleted,
         });
         originTodo.value = {...res.data};
-        //triggerToast('변경되었습니다.');
+        triggerToast('성공적으로 변경 되었습니다.');
         router.push({
           name: 'TodosList'
         });
       } catch(err) {
-        triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
+        err.value = '오류로 인해 변경할 수 없습니다!';
+        triggerToast(err.value, 'danger');
       }
     }
 
@@ -169,16 +162,5 @@ export default {
 
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-} 
+
 </style>

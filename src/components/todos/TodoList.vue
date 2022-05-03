@@ -52,7 +52,7 @@
         v-if="showModal" 
         @close="closeModal" 
         @delete="deleteTodo"
-      /><!-- @update="updateTodo(index, $event)" -->
+      />
     </teleport>
 </template>
 
@@ -79,7 +79,6 @@ export default {
   emits: [
     'toggle-todo',
     'delete-todo',
-    //'update-todo',
   ],
 
   setup(props, { emit }) {
@@ -93,17 +92,14 @@ export default {
     }
 
     const infoId = ref(null); // to-do id
-    //const infoSubject = ref(null); // to-do subject
 
     const showModal = ref(false); // to-do 모달
     const openModal = (getId) => {
       infoId.value = getId;
-      //infoSubject.value = todo.subject;
       showModal.value = true;
     };
     const closeModal = () => {
       infoId.value = null;
-      //infoSubject.value = null;
       showModal.value = false;
     };
     
@@ -117,10 +113,6 @@ export default {
       emit('toggle-todo', index, event.target.checked);
     };
 
-    // const updateTodo = (index, event) => { // to-do 업데이트
-    //   emit('update-todo', index, event.target.value);
-    // };
-
     return {
       moveToPage,
       showModal,
@@ -128,7 +120,6 @@ export default {
       closeModal,
       deleteTodo,
       toggleTodo,
-      // updateTodo,
     }
   }
 }

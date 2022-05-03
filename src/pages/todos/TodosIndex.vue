@@ -8,7 +8,7 @@
 <template>
   <div>
     <div class="card">
-      <CoinList v-once />
+      <CoinList />
     </div><br />
 
     <input
@@ -31,9 +31,14 @@
       :todos="todos" 
       @toggle-todo="toggleTodo" 
       @delete-todo="deleteTodo" 
-      
-    /><br /><!-- @update-todo="updateTodo" --> 
+    /><br />
 
+    <!-- <Pagination 
+      v-if="todos.length"
+      :currentPage="currentPage"
+      :numberOfPages="numberOfPages"
+      @click="getTodos"
+    /> -->
     <nav>
       <ul class="pagination justify-content-center">
         <li v-if="currentPage !== 1" class="page-item">
@@ -59,14 +64,6 @@
       </ul>
     </nav>
   </div>
-  
-  <transition name="fade">
-    <Toast 
-      v-if="showToast" 
-      :message="toastMessage" 
-      :type="toastAlertType"
-    />
-  </transition>
 </template>
 
 
@@ -78,7 +75,7 @@ import axios from 'axios';
 import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
 import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌트
 import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
-import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
+//import Pagination from '@/components/functional_components/PaginationComponent.vue'; // 페이징 컴포넌트
 
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
@@ -86,8 +83,8 @@ export default {
   components: {
     CoinList,
     ToDoList, 
-    TodoForm, 
-    Toast,
+    TodoForm,
+    //Pagination,
   },
 
   setup() {
@@ -122,7 +119,8 @@ export default {
         numberOfTodos.value = res.headers['x-total-count'];
         todos.value = res.data;
       } catch(err) {
-        triggerToast('오류로 인해 불러올 수 없습니다!', 'danger');
+        err.value = '오류로 인해 불러올 수 없습니다!';
+        triggerToast(err.value, 'danger');
       }
     }
     getTodos();
@@ -133,20 +131,22 @@ export default {
           subject: todo.subject,
           isCompleted: todo.isCompleted,
         });
+        triggerToast('성공적으로 추가 되었습니다.');
         getTodos(1);
-        triggerToast('추가 되었습니다.');
       } catch(err) {
-        triggerToast('오류로 인해 추가할 수 없습니다!', 'danger');
+        err.value = '오류로 인해 추가할 수 없습니다!';
+        triggerToast(err.value, 'danger');
       }
     };
 
     const deleteTodo = async (getId) => { // to-do 삭제
       try {
         await axios.delete(`http://localhost:3000/todos/${getId}`);
+        triggerToast('성공적으로 삭제 되었습니다.');
         getTodos(1);
-        triggerToast('삭제 되었습니다.');
       } catch(err) {
-        triggerToast('오류로 인해 삭제할 수 없습니다!', 'danger');
+        err.value = '오류로 인해 삭제할 수 없습니다!'
+        triggerToast(err.value, 'danger');
       }
     };
 
@@ -157,9 +157,10 @@ export default {
           isCompleted: checked
         });
         todos.value[index].iscompleted = checked;
-        triggerToast('변경 되었습니다.');
+        triggerToast('성공적으로 변경 되었습니다.');
       } catch(err) {
-        triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
+        err.value = '오류로 인해 변경할 수 없습니다!'
+        triggerToast(err.value, 'danger');
       }
     };
 
@@ -170,22 +171,10 @@ export default {
       triggerToast,
     } = useToast(); // 변경 사항시 알림
 
-    // const updateTodo = async (index, subject) => { // to-do 업데이트
-    //   const getId = todos.value[index].id;
-    //   try {
-    //     await axios.put(`http://localhost:3000/todos/${getId}`, {
-    //       subject: subject
-    //     });
-    //     todos.value[index].subject = subject;
-    //     triggerToast('변경 되었습니다.');
-    //   } catch(err) {
-    //     triggerToast('오류로 인해 변경할 수 없습니다!', 'danger');
-    //   }
-    // };
-
     return {
       numberOfPages,
       currentPage,
+
       todos,
       getTodos,
       addTodo,
@@ -193,10 +182,10 @@ export default {
       toggleTodo,
       searchTodo,
       searchTodoKeyup,
+
+      showToast,
       toastMessage,
       toastAlertType,
-      showToast,
-      // updateTodo,
     };
   }
 }
@@ -204,10 +193,6 @@ export default {
 
 
 <style scoped>
-.page-cursor {
-  cursor: pointer;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease;
@@ -222,4 +207,8 @@ export default {
 .fade-leave-from {
   opacity: 1;
 } 
+
+.page-cursor {
+  cursor: pointer;
+}
 </style>

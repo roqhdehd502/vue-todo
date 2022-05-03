@@ -4,20 +4,25 @@
   <div class="container">
     <router-view />
   </div>
+
+  <Toast />
 </template>
 
 
 <script>
-import NavigationBar from '@/components/functional_components/NavigationBar.vue';
+import NavigationBar from '@/components/functional_components/NavigationBar.vue'; // 네비게이션 바 컴포넌트
+import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
 
 export default {
   components: {
     NavigationBar,
+    Toast,
   },
 
   setup() {
-    return {
 
+    return { 
+      
     }
   }
 }

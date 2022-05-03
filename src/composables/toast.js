@@ -5,33 +5,20 @@
  */
 
 
-import { ref, onUnmounted } from 'vue';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export const useToast = () => {
-  const toastMessage = ref('');
-  const toastAlertType = ref('');
-  const showToast = ref(false);
-  const timeout = ref(null);
+  const store = useStore();
+
+  const toasts = computed(() => store.state.toast.toasts);
 
   const triggerToast = (message, type='success') => { // Toast 기능
-    toastMessage.value = message;
-    toastAlertType.value = type;
-    showToast.value = true;
-    timeout.value = setTimeout(() => {
-      toastMessage.value = '';
-      toastAlertType.value = '';
-      showToast.value = false;
-    }, 3000);
+    store.dispatch('toast/triggerToast', { message: message, type: type });
   }
 
-  onUnmounted(()=> {
-    clearTimeout(timeout.value);
-  });
-
   return {
-    showToast,
-    toastMessage,
-    toastAlertType,
+    toasts,
     triggerToast,
   }
 }

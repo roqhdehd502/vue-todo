@@ -20,9 +20,6 @@
         <span class="material-icons refresh-icon">
           refresh
         </span>
-        <span>
-          {{ timer }}초 후 새로고침
-        </span>
       </div>
       <table class="table table-striped table-hover justify-content-center">
         <colgroup>
@@ -78,22 +75,15 @@ export default {
       }
     });
 
-    const setTime = 5; // 자동으로 코인 정보 갱신할 시간 설정
-    const timer = ref(setTime);
+    const setTime = 1; // 자동으로 코인 정보 갱신할 시간 설정
 
-    setInterval(() => { // 10초 마다 코인 정보 불러오기
+    setInterval(() => { // 특정 시간마다 코인 정보 불러오기
       getCoins();
-      timer.value = setTime;
     }, setTime*1000);
-    
-    timer.value = setInterval(() => { // 코인 새로고침 타이머
-      if(timer.value === 1) { timer.value = setTime+1; }
-      timer.value -= 1;
-    }, 1000);
+
 
     const reloading = () => { // 새로고침 버튼을 눌러 코인 정보 불러오기
       getCoins();
-      timer.value = setTime;
     };
 
     const priceFormatting = (price) => { // 코인 시세 반올림 및 포맷팅
@@ -113,7 +103,6 @@ export default {
     return { 
       loading,
       coins,
-      timer,
       reloading,
       priceFormatting,
       percentChangeColor,
@@ -126,12 +115,16 @@ export default {
 <style scoped>
 .refresh {
   margin-bottom: 10px;
-  text-align: end;
-  cursor: pointer;
+  text-align: end !important;
 }
 
 .refresh-icon {
-  margin-right: 3px;
+  cursor: pointer;
+  transition: transform .7s ease-in-out;
+}
+
+.refresh-icon :hover {
+  transform: rotate(360deg);
 }
 
 .th-padding-start {
