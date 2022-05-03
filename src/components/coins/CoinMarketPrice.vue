@@ -120,11 +120,6 @@ export default {
 
 .refresh-icon {
   cursor: pointer;
-  transition: transform .7s ease-in-out;
-}
-
-.refresh-icon :hover {
-  transform: rotate(360deg);
 }
 
 .th-padding-start {
