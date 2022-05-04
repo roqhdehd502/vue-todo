@@ -28,9 +28,12 @@
 <script>
 import router from '@/router';
 
+import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
+
 export default {
     setup() {
-        const getId = 1; // User 데이터 키값
+        const getUserInfo = useAuth();
+        const getId = getUserInfo.userInfo.id; // User 데이터 키값
         const moveToPage = (getId) => { // to-do 상세 페이지 이동
             router.push({
                 name: 'User',
@@ -39,7 +42,6 @@ export default {
                 }
             });
         }
-
         return {
             getId,
             moveToPage,

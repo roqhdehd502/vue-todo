@@ -13,7 +13,6 @@
                     Coin Todos
                 </h1>
             </router-link>
-        
             <div class="card card-style"> 
                 <form @submit="loginSubmit"> 
                     <div class="container justify-content-center">
@@ -68,6 +67,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid'; // 인증 토큰 발급용
 
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
@@ -78,24 +78,37 @@ export default {
         
         const userId = ref('');
         const userPassword = ref('');
-
+        
         const loginSubmit = async (e) => { // 로그인 과정 인증
             e.preventDefault();
-            const saveData = {
+            const userData = {
                 userId: userId.value,
                 userPassword: userPassword.value,
             };
-            try { 
-                const res = await axios.get(`http://localhost:3000/users`, saveData);
-                /* id랑 pw 체크 기능 추가 구현하기! */
-                if(res.status === 200) {
-                    store.commit("login", res.data);
+            try {
+                const res = await axios.get(`http://localhost:3000/users`, userData);
+                const resData = res.data;
+                const correct = resData.find((correctUser) => {
+                    return (
+                        correctUser.userId === userData.userId 
+                        && correctUser.userPassword === userData.userPassword
+                    );
+                });
+                if(correct === undefined || correct === null || correct === "") {
+                    triggerToast('올바르지 않은 계정입니다!', 'danger');
+                    userId.value = '';
+                    userPassword.value = '';
+                } else {
+                    const token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
+                    correct.token = token;
+                    console.log(correct);
+                    store.commit("LOGIN_USER_INFO", correct);
                     router.push({
                         name: 'TodosList'
                     });
                 }
             } catch (err) { 
-                err.value = '올바르지 않은 계정입니다!';
+                err.value = '올바르지 않은 접근입니다!';
                 triggerToast(err.value, 'danger');
             }     
         };

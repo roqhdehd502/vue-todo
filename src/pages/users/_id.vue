@@ -44,24 +44,18 @@
 
 <script>
 import { ref } from 'vue';
-
 import { useRoute, useRouter } from 'vue-router';
-
 import axios from 'axios';
-
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
-
 export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
-
         const moveToTodoListPage = () => { // to-do 리스트 페이지 이동
             router.push({
                 name: 'TodosList'
             });
         }
-
         const getId = route.params.id; // 유저 데이터 키값(literally id. not userID.)
         const loading = ref(true);
         const user = ref(null);
@@ -76,20 +70,16 @@ export default {
             }
         }
         getUser();
-
         const {
             showToast,
             toastMessage,
             toastAlertType,
             triggerToast
         } = useToast(); // 변경 
-
         return {
             moveToTodoListPage,
-
             loading,
             user,
-
             showToast,
             toastMessage,
             toastAlertType,
@@ -105,19 +95,16 @@ export default {
     text-align: center !important;
     align-items: center !important;
 }
-
 .profile-introduce {
     margin-top: 10px;
     margin-bottom: 30px;
 }
-
 .user-image {
     display: block;
     margin: 0px auto;
     width: 200px; height: 200px;
     border-radius: 100px;
 }
-
 .profile-aboutme {
     margin-top: 30px;
     margin-bottom: 30px;
@@ -125,7 +112,6 @@ export default {
     background-color: whitesmoke;
     border-radius: 10px;
 }
-
 .profile-aboutme-title {
     margin-bottom: 20px;
 }
