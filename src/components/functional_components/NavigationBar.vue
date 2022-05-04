@@ -15,10 +15,17 @@
             <div class="navbar-brand home-link">
                 <!-- 추후 유저 이미지 정보를 불러올 것 -->
                 <img 
+                    src="@/assets/images/AnonymousUser.png"
                     class="profile-img" 
-                    src="@/assets/images/AnonymousUser.png" 
-                    @click="moveToPage(getId)"
+                    @click="moveToUser(getId)"
                 />
+                <button 
+                    type="button" 
+                    class="btn btn-warning btn-sm"
+                    @click="moveToLogout"
+                >
+                    로그아웃
+                </button>
             </div>
         </div>
     </nav>
@@ -32,9 +39,13 @@ import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
 
 export default {
     setup() {
-        const getUserInfo = useAuth();
+        const {
+            getUserInfo,
+            logout,
+        } = useAuth();
+
         const getId = getUserInfo.userInfo.id; // User 데이터 키값
-        const moveToPage = (getId) => { // to-do 상세 페이지 이동
+        const moveToUser = (getId) => { // to-do 상세 페이지 이동
             router.push({
                 name: 'User',
                 params: {
@@ -42,9 +53,14 @@ export default {
                 }
             });
         }
+
+        const moveToLogout = () => {
+            logout();
+        }
         return {
             getId,
-            moveToPage,
+            moveToUser,
+            moveToLogout,
         }
     }
 }

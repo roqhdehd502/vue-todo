@@ -15,7 +15,14 @@ export const useAuth = () => {
         token: store.state.auth.token,
     }
 
+    const logout = () => { // 로그아웃 기능
+        store.dispatch('auth/logout', {
+            
+        });
+    }
+
     return {
         userInfo,
+        logout,
     }
 }

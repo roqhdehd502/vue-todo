@@ -8,31 +8,29 @@
 import router from '@/router' 
 
 export default { 
-    state: { 
+    state: { // 유저 정보 더 추가하기!
         id: '',
         token: '' 
     }, 
 
     mutations: { 
-        LOGIN_USER_INFO: function (state, payload) { 
+        ADD_USER_INFO(state, payload) { 
             state.id = payload.id 
             state.token = payload.token 
         }, 
-        /* 해당 로직 수정할 것 */
-        REMOVE_LOGIN_USER_INFO: function (state) { 
-            if (!state.token) { 
-                router.push({ 
-                    name: 'login' 
-                }).catch(err => { 
-                    err.value = "올바르지 않은 접근입니다!";
-                    alert(err.value);
-                }) 
-            } 
+        REMOVE_USER_INFO(state) { 
+            state.id = '';
+            state.token = '';
         } 
     },
 
     actions: {
-        
+        logout({ commit }) { // 로그아웃
+            commit('REMOVE_USER_INFO');
+            router.push({
+                name: 'Login'
+            });
+        }
     },
 
     getters: {
