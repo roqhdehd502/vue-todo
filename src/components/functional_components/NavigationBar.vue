@@ -8,7 +8,7 @@
 <template>
     <nav class="navbar navbar-dark bg-success">
         <router-link :to="{ name: 'TodosList' }" class="navbar-brand home-link">
-            <img class="rounded float-start logo-img" src="@/assets/images/LogoImage.png" />
+            <!-- <img class="rounded float-start logo-img" src="@/assets/images/LogoImage.png" /> -->
             Coin Todos 
         </router-link>
         <div> 
@@ -54,10 +54,10 @@ export default {
     margin-left: 10px;
 }
 
-.logo-img {
+/* .logo-img {
     margin-right: 5px;
     width: 30px; height: 30px;
-}
+} */
 
 .profile-img {
     margin-right: 10px;

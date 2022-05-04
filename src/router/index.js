@@ -12,6 +12,8 @@ import Todo from '../pages/todos/_id.vue'; // todo 수정 페이지
 
 import User from '../pages/users/_id.vue'; // User 상세 페이지
 
+import Login from '../pages/auth/LoginAuth.vue'; // 로그인 페이지
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -29,6 +31,11 @@ const router = createRouter({
       path: '/user/:id',
       name: 'User',
       component: User,
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
     },
   ]
 });
