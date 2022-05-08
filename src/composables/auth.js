@@ -5,24 +5,24 @@
  */
 
 
-import { useStore } from 'vuex';
+ import { useStore } from 'vuex';
 
-export const useAuth = () => {
-    const store = useStore();
-    
-    const userInfo = {
-        id: store.state.auth.id,
-        token: store.state.auth.token,
-    }
-
-    const logout = () => { // 로그아웃 기능
-        store.dispatch('auth/logout', {
-            
-        });
-    }
-
-    return {
-        userInfo,
-        logout,
-    }
-}
+ export const useAuth = () => {
+     const store = useStore();
+     
+     const userInfo = {
+         id: store.state.auth.id,
+         token: store.state.auth.token,
+     }
+ 
+     const logout = () => { // 로그아웃 기능
+         store.dispatch('auth/logout', {
+             
+         });
+     }
+ 
+     return {
+         userInfo,
+         logout,
+     }
+ }
