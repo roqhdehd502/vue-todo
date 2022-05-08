@@ -107,8 +107,8 @@ export default {
                     userPassword.value = '';
                 } else {
                     correct.token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
-                    const session = sessionStorage.setItem('loggedInUserObj', JSON.stringify(correct));
-                    store.commit("SET_USER_INFO", session);
+                    sessionStorage.setItem('loggedInUserObj', JSON.stringify(correct));
+                    store.commit("SET_USER_INFO", correct);
                     router.push({
                         name: 'TodosList'
                     });

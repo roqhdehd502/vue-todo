@@ -11,27 +11,32 @@
             Coin Todos 
         </router-link>
         <div> 
-            <div class="navbar-brand home-link">
+            <div 
+              v-if="getUserObj == null"
+              class="navbar-brand home-link"
+            >
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="moveToLogin"
+                >
+                  로그인
+                </button> 
+            </div>
+            <div v-else class="navbar-brand home-link">
                 <img 
                     :src="getUserObj.userImage"
                     onError="@/assets/images/AnonymousUser.png"
                     class="profile-img" 
                     @click="moveToUser(getUserObj.id)"
                 />
-                <!-- <button
-                  type="button"
-                  class="btn btn-primary btn-sm"
-                  @click="moveToLogin"
-                >
-                  로그인
-                </button> -->
-                <!-- <button 
+                <button 
                     type="button" 
                     class="btn btn-warning btn-sm"
-                    @click="moveToLogout"
+                    @click="logout"
                 >
                     로그아웃
-                </button> -->
+                </button>
             </div>
         </div>
     </nav>
@@ -41,27 +46,19 @@
 <script>
 import router from '@/router';
 
-//import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
-
 export default {
     setup() {
-        // const {
-        //     getUserObj,
-        //     //logout,
-        // } = useAuth(); // 유저 데이터
+        const moveToLogin = () => { // 로그인 페이지로 이동
+            router.push({
+                name: 'Login',
+            });
+        }
+        
+        const getUserObj = JSON.parse( // 유저 정보 불러오기
+            sessionStorage.getItem('loggedInUserObj')
+        );
 
-        // const moveToLogin = () => { // 로그인 페이지로 이동
-        //     router.push({
-        //         path: '/login',
-        //     });
-        // }
-
-        // const moveToLogout = () => { // 로그아웃
-        //     logout();
-        // }
-        const getUserObj = JSON.parse(sessionStorage.getItem('loggedInUserObj'));
-
-        const moveToUser = (getId) => { // to-do 상세 페이지 이동
+        const moveToUser = (getId) => { // 유저 상세 페이지 이동
             router.push({
                 name: 'User',
                 params: {
@@ -70,11 +67,18 @@ export default {
             });
         }
 
+        const logout = () => { // 로그아웃
+            sessionStorage.clear();
+            router.push({
+                name: 'Login',
+            });
+        }
+
         return {
+            moveToLogin,
             getUserObj,
-            //moveToLogin,
-            //moveToLogout,
             moveToUser,
+            logout,
         }
     }
 }
@@ -85,11 +89,6 @@ export default {
 .home-link {
     margin-left: 10px;
 }
-
-/* .logo-img {
-    margin-right: 5px;
-    width: 30px; height: 30px;
-} */
 
 .profile-img {
     margin-right: 10px;
