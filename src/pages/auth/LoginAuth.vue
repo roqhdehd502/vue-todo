@@ -78,6 +78,13 @@ export default {
         
         const userId = ref('');
         const userPassword = ref('');
+
+        const {
+            showToast,
+            toastMessage,
+            toastAlertType,
+            triggerToast,
+        } = useToast(); // 변경 사항시 알림
         
         const loginSubmit = async (e) => { // 로그인 과정 인증
             e.preventDefault();
@@ -99,10 +106,9 @@ export default {
                     userId.value = '';
                     userPassword.value = '';
                 } else {
-                    const token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
-                    correct.token = token;
-                    console.log(correct);
-                    store.commit("LOGIN_USER_INFO", correct);
+                    correct.token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
+                    const session = sessionStorage.setItem('loggedInUserObj', JSON.stringify(correct));
+                    store.commit("SET_USER_INFO", session);
                     router.push({
                         name: 'TodosList'
                     });
@@ -112,13 +118,6 @@ export default {
                 triggerToast(err.value, 'danger');
             }     
         };
-        
-        const {
-            showToast,
-            toastMessage,
-            toastAlertType,
-            triggerToast,
-        } = useToast(); // 변경 사항시 알림
 
         return {
             userId,
