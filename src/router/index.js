@@ -18,6 +18,11 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: '/login',
+      name: 'Login',
+      component: Login,
+    },
+    {
       path: '/',
       name: 'TodosList',
       component: TodosList,
@@ -31,11 +36,6 @@ const router = createRouter({
       path: '/user/:id',
       name: 'User',
       component: User,
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
     },
   ]
 });

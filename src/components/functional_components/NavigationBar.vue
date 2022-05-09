@@ -12,7 +12,7 @@
         </router-link>
         <div> 
             <div 
-              v-if="getUserObj == null"
+              v-if="Object.keys(getUserObj).length === 0"
               class="navbar-brand home-link"
             >
                 <button
@@ -26,7 +26,7 @@
             <div v-else class="navbar-brand home-link">
                 <img 
                     :src="getUserObj.userImage"
-                    onError="@/assets/images/AnonymousUser.png"
+                    onerror="@/assets/images/AnonymousUser.png"
                     class="profile-img" 
                     @click="moveToUser(getUserObj.id)"
                 />
@@ -44,19 +44,24 @@
 
 
 <script>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
 import router from '@/router';
+
+import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 
 export default {
     setup() {
+        const store = useStore();
+
         const moveToLogin = () => { // 로그인 페이지로 이동
             router.push({
                 name: 'Login',
             });
         }
-        
-        const getUserObj = JSON.parse( // 유저 정보 불러오기
-            sessionStorage.getItem('loggedInUserObj')
-        );
+
+        const getUserObj = ref({}); // 유저 정보
+        getUserObj.value = useAuth().getUserObj.userObj; // 유저 정보 가져오기
 
         const moveToUser = (getId) => { // 유저 상세 페이지 이동
             router.push({
@@ -68,10 +73,9 @@ export default {
         }
 
         const logout = () => { // 로그아웃
-            sessionStorage.clear();
-            router.push({
-                name: 'Login',
-            });
+            store.commit("REMOVE_USER_INFO");
+            getUserObj.value = {};
+            window.location.replace('/login');
         }
 
         return {

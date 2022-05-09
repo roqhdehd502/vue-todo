@@ -64,8 +64,6 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
-import { useRouter } from 'vue-router';
-
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid'; // 인증 토큰 발급용
 
@@ -74,7 +72,6 @@ import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 export default { 
     setup() {
         const store = useStore();
-        const router = useRouter();
         
         const userId = ref('');
         const userPassword = ref('');
@@ -107,11 +104,8 @@ export default {
                     userPassword.value = '';
                 } else {
                     correct.token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
-                    sessionStorage.setItem('loggedInUserObj', JSON.stringify(correct));
                     store.commit("SET_USER_INFO", correct);
-                    router.push({
-                        name: 'TodosList'
-                    });
+                    window.location.replace('/');
                 }
             } catch (err) { 
                 err.value = '올바르지 않은 접근입니다!';
