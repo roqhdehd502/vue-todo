@@ -119,8 +119,10 @@ export default {
       e.preventDefault();
       try {
         const res = await axios.put(`http://localhost:3000/todos/${getId}`, {
+          userId: originTodo.value.userId,
           subject: todo.value.subject,
           isCompleted: todo.value.isCompleted,
+          enabled: originTodo.value.enabled,
         });
         originTodo.value = {...res.data};
         triggerToast('성공적으로 변경 되었습니다.');

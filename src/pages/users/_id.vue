@@ -45,24 +45,30 @@
 <script>
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
 import axios from 'axios';
+
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+
 export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
+
         const moveToTodoListPage = () => { // to-do 리스트 페이지 이동
             router.push({
                 name: 'TodosList'
             });
         }
-        const getId = route.params.id; // 유저 데이터 키값(literally id. not userID.)
+
+        const getId = route.params.id; // 유저 Id
         const loading = ref(true);
         const user = ref(null);
         const getUser = async () => {
             try {
-                const res =  await axios.get(`http://localhost:3000/users/${getId}`);
+                const res = await axios.get(`http://localhost:3000/users/${getId}`);
                 user.value = { ...res.data };
+                console.log(user.value.get);
                 loading.value = false;
             } catch(err) {
                 err.value = '오류로 인해 불러올 수 없습니다!';

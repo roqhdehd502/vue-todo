@@ -91,22 +91,22 @@ export default {
       });
     }
 
-    const infoId = ref(null); // to-do id
+    const todoId = ref(null); // to-do id
 
     const showModal = ref(false); // to-do 모달
     const openModal = (getId) => {
-      infoId.value = getId;
+      todoId.value = getId;
       showModal.value = true;
     };
     const closeModal = () => {
-      infoId.value = null;
+      todoId.value = null;
       showModal.value = false;
     };
     
     const deleteTodo = () => { // to-do 삭제
-      emit('delete-todo', infoId.value);
+      emit('delete-todo', todoId.value);
       showModal.value = false;
-      infoId.value = null;
+      todoId.value = null;
     };
 
     const toggleTodo = (index, event) => { // to-do 토글

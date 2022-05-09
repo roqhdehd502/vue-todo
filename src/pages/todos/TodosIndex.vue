@@ -11,58 +11,69 @@
       <CoinList />
     </div><br />
 
-    <input
-      class="form-control"
-      type="text"
-      v-model="searchTodo"
-      placeholder="검색할 Todo 입력"
-      @keyup.enter="searchTodoKeyup"
-    /><br />
+    <div v-if="isLogin">
+      <input
+        class="form-control"
+        type="text"
+        v-model="searchTodo"
+        placeholder="검색할 Todo 입력"
+        @keyup.enter="searchTodoKeyup"
+      /><br />
 
-    <div class="row"> 
-      <TodoForm @add-todo="addTodo" />
-    </div><br />
+      <div class="row"> 
+        <TodoForm @add-todo="addTodo" />
+      </div><br />
 
-    <div v-if="!todos.length">
-      추가된 할 일이 없습니다.
+      <div v-if="!todos.length">
+        추가된 할 일이 없습니다.
+      </div>
+
+      <ToDoList 
+        :todos="todos" 
+        @toggle-todo="toggleTodo" 
+        @delete-todo="deleteTodo" 
+      /><br />
+
+      <!-- <Pagination 
+        v-if="todos.length"
+        :currentPage="currentPage"
+        :numberOfPages="numberOfPages"
+        @click="getTodos"
+      /> -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          <li v-if="currentPage !== 1" class="page-item">
+            <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
+              Prev
+            </a>
+          </li>
+          <li 
+            v-for="page in numberOfPages" 
+            :key="page"
+            class="page-item"
+            :class="currentPage === page ? 'active' : ''"
+          >
+            <a class="page-link page-cursor" @click="getTodos(page)">
+              {{ page }}
+            </a>
+          </li>
+          <li v-if="numberOfPages !== currentPage" class="page-item">
+            <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
+              Next
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-
-    <ToDoList 
-      :todos="todos" 
-      @toggle-todo="toggleTodo" 
-      @delete-todo="deleteTodo" 
-    /><br />
-
-    <!-- <Pagination 
-      v-if="todos.length"
-      :currentPage="currentPage"
-      :numberOfPages="numberOfPages"
-      @click="getTodos"
-    /> -->
-    <nav>
-      <ul class="pagination justify-content-center">
-        <li v-if="currentPage !== 1" class="page-item">
-          <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
-            Prev
-          </a>
-        </li>
-        <li 
-          v-for="page in numberOfPages" 
-          :key="page"
-          class="page-item"
-          :class="currentPage === page ? 'active' : ''"
-        >
-          <a class="page-link page-cursor" @click="getTodos(page)">
-            {{ page }}
-          </a>
-        </li>
-        <li v-if="numberOfPages !== currentPage" class="page-item">
-          <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
-            Next
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <div v-else>
+      <input 
+        class="form-control" 
+        type="text" 
+        value="로그인한 회원만 작성 가능합니다" 
+        disabled 
+        readonly
+      >
+    </div>
   </div>
 </template>
 
@@ -77,6 +88,7 @@ import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌
 import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
 //import Pagination from '@/components/functional_components/PaginationComponent.vue'; // 페이징 컴포넌트
 
+import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
@@ -88,6 +100,9 @@ export default {
   },
 
   setup() {
+    const isLogin = useAuth().isLogin(); // 로그인 여부
+    const getUserId = useAuth().getUserObj.userObj.userId; // 로그인한 유저 Id
+
     let limitInPage = 3; // to-do 페이징
     const numberOfTodos = ref(0); 
     const currentPage = ref(1);
@@ -109,12 +124,12 @@ export default {
       }, 100);
     });
     
-    const todos = ref([]); // to-do 리스트
+    const todos = ref([]); // to-do 리스트 (본인이 작성한 Todo 리스트만 출력)
     const getTodos = async (page = currentPage.value) => {
       currentPage.value = page;
       try {
         const res =  await axios.get(
-          `http://localhost:3000/todos?_sort=id&_order=desc&subject_like=${searchTodo.value}&_page=${currentPage.value}&_limit=${limitInPage}`
+          `http://localhost:3000/todos?_sort=id&_order=desc&enabled=true&userId=${getUserId}&subject_like=${searchTodo.value}&_page=${currentPage.value}&_limit=${limitInPage}`
         );
         numberOfTodos.value = res.headers['x-total-count'];
         todos.value = res.data;
@@ -128,8 +143,10 @@ export default {
     const addTodo = async (todo) => { // to-do 추가
       try {
         await axios.post('http://localhost:3000/todos', {
+          userId: todo.userId,
           subject: todo.subject,
           isCompleted: todo.isCompleted,
+          enabled: todo.enabled,
         });
         triggerToast('성공적으로 추가 되었습니다.');
         getTodos(1);
@@ -139,9 +156,11 @@ export default {
       }
     };
 
-    const deleteTodo = async (getId) => { // to-do 삭제
+    const deleteTodo = async (getId) => { // to-do 삭제 (실제로는 enabled 값만 바꿔서 비활성화)
       try {
-        await axios.delete(`http://localhost:3000/todos/${getId}`);
+        await axios.patch(`http://localhost:3000/todos/${getId}`, {
+          enabled: false
+        });
         triggerToast('성공적으로 삭제 되었습니다.');
         getTodos(1);
       } catch(err) {
@@ -172,6 +191,8 @@ export default {
     } = useToast(); // 변경 사항시 알림
 
     return {
+      isLogin,
+
       numberOfPages,
       currentPage,
 

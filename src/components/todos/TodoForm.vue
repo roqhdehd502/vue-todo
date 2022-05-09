@@ -33,12 +33,16 @@
 <script>
 import { ref } from 'vue';
 
+import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
+
 export default { 
   emits: [
     'add-todo',
   ],
 
   setup(props, { emit }) {
+    const getUserId = useAuth().getUserObj.userObj.userId; // 로그인한 유저 Id
+
     const todo = ref(''); // to-do 내용
     const hasError = ref(false); // 공백 입력 방지 에러 체크 변수
     
@@ -49,8 +53,10 @@ export default {
         hasError.value = true;
       } else {
         emit('add-todo', {
+            userId: getUserId,
             subject: todo.value,
             isCompleted: false,
+            enabled: true,
         });
         hasError.value = false;
         todo.value = '';

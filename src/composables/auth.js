@@ -10,7 +10,7 @@ import { useStore } from 'vuex';
 export const useAuth = () => {
     const store = useStore();
 
-    const isLogin = () => { // 로그인 여부 가져오기
+    function isLogin() { // 로그인 여부 가져오기
         if(Object.keys(store.state.auth.userObj).length === 0) {
             return false;
         } else {

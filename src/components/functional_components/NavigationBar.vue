@@ -64,7 +64,7 @@ export default {
         getUserObj.value = useAuth().getUserObj.userObj; // 유저 정보 가져오기
 
         const moveToUser = (getId) => { // 유저 상세 페이지 이동
-            router.push({
+             router.push({
                 name: 'User',
                 params: {
                     id: getId
