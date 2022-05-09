@@ -8,21 +8,32 @@
 <template>
     <nav class="navbar navbar-dark bg-success">
         <router-link :to="{ name: 'TodosList' }" class="navbar-brand home-link">
-            <!-- <img class="rounded float-start logo-img" src="@/assets/images/LogoImage.png" /> -->
             Coin Todos 
         </router-link>
         <div> 
-            <div class="navbar-brand home-link">
-                <!-- 추후 유저 이미지 정보를 불러올 것 -->
+            <div 
+              v-if="getUserObj == null"
+              class="navbar-brand home-link"
+            >
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="moveToLogin"
+                >
+                  로그인
+                </button> 
+            </div>
+            <div v-else class="navbar-brand home-link">
                 <img 
-                    src="@/assets/images/AnonymousUser.png"
+                    :src="getUserObj.userImage"
+                    onError="@/assets/images/AnonymousUser.png"
                     class="profile-img" 
-                    @click="moveToUser(getId)"
+                    @click="moveToUser(getUserObj.id)"
                 />
                 <button 
                     type="button" 
                     class="btn btn-warning btn-sm"
-                    @click="moveToLogout"
+                    @click="logout"
                 >
                     로그아웃
                 </button>
@@ -35,17 +46,19 @@
 <script>
 import router from '@/router';
 
-import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
-
 export default {
     setup() {
-        const {
-            getUserInfo,
-            logout,
-        } = useAuth();
+        const moveToLogin = () => { // 로그인 페이지로 이동
+            router.push({
+                name: 'Login',
+            });
+        }
+        
+        const getUserObj = JSON.parse( // 유저 정보 불러오기
+            sessionStorage.getItem('loggedInUserObj')
+        );
 
-        const getId = getUserInfo.userInfo.id; // User 데이터 키값
-        const moveToUser = (getId) => { // to-do 상세 페이지 이동
+        const moveToUser = (getId) => { // 유저 상세 페이지 이동
             router.push({
                 name: 'User',
                 params: {
@@ -54,13 +67,18 @@ export default {
             });
         }
 
-        const moveToLogout = () => {
-            logout();
+        const logout = () => { // 로그아웃
+            sessionStorage.clear();
+            router.push({
+                name: 'Login',
+            });
         }
+
         return {
-            getId,
+            moveToLogin,
+            getUserObj,
             moveToUser,
-            moveToLogout,
+            logout,
         }
     }
 }
@@ -71,11 +89,6 @@ export default {
 .home-link {
     margin-left: 10px;
 }
-
-/* .logo-img {
-    margin-right: 5px;
-    width: 30px; height: 30px;
-} */
 
 .profile-img {
     margin-right: 10px;
