@@ -77,11 +77,11 @@
             <div class="row g-2">
                 <button 
                     type="submit" 
-                    class="btn btn-primary"
+                    class="btn btn-success"
                 >
                     저장
                 </button>
-                <button class="btn btn-outline-dark" @click="modifyMode">
+                <button class="btn btn-secondary" @click="modifyMode">
                     취소
                 </button>
             </div>
@@ -224,6 +224,6 @@ export default {
 .modify-mode-style {
     justify-content: center;
     align-items: center;
-    padding-top: 10vh;
+    padding-top: 15vh;
 }
 </style>

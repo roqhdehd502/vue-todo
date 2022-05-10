@@ -14,9 +14,13 @@
     <span class="visually-hidden">Loading...</span>
   </div>
 
-  <form v-else @submit="onUpdate">
+  <form 
+    v-else 
+    class="form-style"
+    @submit="onUpdate"
+  >
     <div class="row">
-      <div class="col-6">
+      <div class="col-8">
         <div class="form-group">
           <label>목표</label>
           <input 
@@ -26,7 +30,7 @@
           />
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4">
         <div class="form-group">
           <label>상태</label>
           <div>
@@ -42,21 +46,17 @@
         </div>
       </div>
     </div><br />
-    <div class="row">
-      <div class="col">
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          :disabled="!isTodoUpdated"
-        >
-          저장
-        </button>
-      </div>
-      <div class="col">
-        <button class="btn btn-outline-dark" @click="moveToTodoListPage">
-          이전
-        </button>
-      </div>
+    <div class="row g-2">
+      <button 
+        type="submit" 
+        class="btn btn-success"
+        :disabled="!isTodoUpdated"
+      >
+        저장
+      </button>
+      <button class="btn btn-secondary" @click="moveToTodoListPage">
+        이전
+      </button>
     </div>
   </form>
 </template>
@@ -164,5 +164,9 @@ export default {
 
 
 <style scoped>
-
+.form-style {
+  justify-content: center;
+  align-items: center;
+  padding-top: 20vh;
+}
 </style>
