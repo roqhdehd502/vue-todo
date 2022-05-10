@@ -22,7 +22,7 @@
 
       <div class="row"> 
         <TodoForm @add-todo="addTodo" />
-      </div><br />
+      </div>
 
       <div v-if="!todos.length">
         추가된 할 일이 없습니다.
@@ -34,12 +34,6 @@
         @delete-todo="deleteTodo" 
       /><br />
 
-      <!-- <Pagination 
-        v-if="todos.length"
-        :currentPage="currentPage"
-        :numberOfPages="numberOfPages"
-        @click="getTodos"
-      /> -->
       <nav>
         <ul class="pagination justify-content-center">
           <li v-if="currentPage !== 1" class="page-item">
@@ -65,14 +59,21 @@
         </ul>
       </nav>
     </div>
-    <div v-else>
+    <div v-else class="input-group mb-3">
       <input 
         class="form-control" 
         type="text" 
-        value="로그인한 회원만 작성 가능합니다" 
+        value="로그인 상태에서만 작성 가능합니다" 
         disabled 
         readonly
       >
+      <button 
+        class="btn btn-outline-secondary" 
+        type="button"
+        @click="moveToLogin"
+      >
+        로그인
+      </button>
     </div>
   </div>
 </template>
@@ -80,13 +81,13 @@
 
 <script>
 import { ref, computed, watch } from 'vue';
+import router from '@/router';
 
 import axios from 'axios';
 
 import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
 import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌트
 import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
-//import Pagination from '@/components/functional_components/PaginationComponent.vue'; // 페이징 컴포넌트
 
 import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
@@ -96,12 +97,17 @@ export default {
     CoinList,
     ToDoList, 
     TodoForm,
-    //Pagination,
   },
 
   setup() {
     const isLogin = useAuth().isLogin(); // 로그인 여부
     const getUserId = useAuth().getUserObj.userObj.userId; // 로그인한 유저 Id
+
+    const moveToLogin = () => { // 로그인 페이지로 이동
+      router.push({
+        name: 'Login',
+      });
+    }
 
     let limitInPage = 3; // to-do 페이징
     const numberOfTodos = ref(0); 
@@ -192,6 +198,7 @@ export default {
 
     return {
       isLogin,
+      moveToLogin,
 
       numberOfPages,
       currentPage,

@@ -26,8 +26,8 @@
             <div v-else class="navbar-brand home-link">
                 <img 
                     :src="getUserObj.userImage"
-                    onerror="@/assets/images/AnonymousUser.png"
-                    class="profile-img" 
+                    @error="replaceImage"
+                    class="profile-img"
                     @click="moveToUser(getUserObj.id)"
                 />
                 <button 
@@ -60,8 +60,12 @@ export default {
             });
         }
 
-        const getUserObj = ref({}); // 유저 정보
+        const getUserObj = ref({});
         getUserObj.value = useAuth().getUserObj.userObj; // 유저 정보 가져오기
+
+        function replaceImage(e) { // 대체 유저 이미지
+            e.target.src = require(`@/assets/images/AnonymousUser.png`); 
+        }
 
         const moveToUser = (getId) => { // 유저 상세 페이지 이동
              router.push({
@@ -81,6 +85,7 @@ export default {
         return {
             moveToLogin,
             getUserObj,
+            replaceImage,
             moveToUser,
             logout,
         }

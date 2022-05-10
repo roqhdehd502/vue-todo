@@ -8,7 +8,7 @@
 <template>
   <form @submit="addTodo">
     <div class="d-flex">
-      <div class="flex-grow-1 mr-2">
+      <div class="input-group mb-3">
         <input 
           class="form-control"
           type="text" 
@@ -16,8 +16,6 @@
           placeholder="추가할 Todo 입력"
           maxlength="30"
         />
-      </div>
-      <div>
         <button class="btn btn-primary" type="submit">
           추가
         </button>

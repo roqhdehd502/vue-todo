@@ -68,7 +68,6 @@ export default {
             try {
                 const res = await axios.get(`http://localhost:3000/users/${getId}`);
                 user.value = { ...res.data };
-                console.log(user.value.get);
                 loading.value = false;
             } catch(err) {
                 err.value = '오류로 인해 불러올 수 없습니다!';

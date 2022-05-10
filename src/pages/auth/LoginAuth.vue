@@ -65,7 +65,7 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid'; // 인증 토큰 발급용
+
 
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
@@ -103,7 +103,6 @@ export default {
                     userId.value = '';
                     userPassword.value = '';
                 } else {
-                    correct.token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
                     store.commit("SET_USER_INFO", correct);
                     window.location.replace('/');
                 }
