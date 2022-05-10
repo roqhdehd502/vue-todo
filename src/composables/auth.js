@@ -10,6 +10,14 @@ import { useStore } from 'vuex';
 export const useAuth = () => {
     const store = useStore();
 
+    const triggerLogin = (loginObj) => { // 로그인
+        store.dispatch('triggerLogin', loginObj);
+    }
+    
+    const getUserObj = { // 유저 정보 가져오기
+        userObj: store.state.auth.userObj
+    };
+
     function isLogin() { // 로그인 여부 가져오기
         if(Object.keys(store.state.auth.userObj).length === 0) {
             return false;
@@ -18,12 +26,14 @@ export const useAuth = () => {
         }
     }
 
-    const getUserObj = { // 유저 정보 가져오기
-        userObj: store.state.auth.userObj
-    }; 
+    const triggerLogout = () => { // 로그아웃
+        store.dispatch('triggerLogout');
+    }
 
     return {
+        triggerLogin,
         isLogin,
         getUserObj,
+        triggerLogout,
     }
 }

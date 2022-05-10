@@ -12,7 +12,7 @@
         </router-link>
         <div> 
             <div 
-              v-if="Object.keys(getUserObj).length === 0"
+              v-if="Object.keys(userObj).length === 0"
               class="navbar-brand home-link"
             >
                 <button
@@ -25,10 +25,10 @@
             </div>
             <div v-else class="navbar-brand home-link">
                 <img 
-                    :src="getUserObj.userImage"
+                    :src="userObj.userImage"
                     @error="replaceImage"
                     class="profile-img"
-                    @click="moveToUser(getUserObj.id)"
+                    @click="moveToUser(userObj.id)"
                 />
                 <button 
                     type="button" 
@@ -45,14 +45,16 @@
 
 <script>
 import { ref } from 'vue';
-import { useStore } from 'vuex';
 import router from '@/router';
 
 import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 
 export default {
     setup() {
-        const store = useStore();
+        const { 
+            getUserObj,
+            triggerLogout, 
+        } = useAuth(); // 로그인 유저 정보
 
         const moveToLogin = () => { // 로그인 페이지로 이동
             router.push({
@@ -60,8 +62,8 @@ export default {
             });
         }
 
-        const getUserObj = ref({});
-        getUserObj.value = useAuth().getUserObj.userObj; // 유저 정보 가져오기
+        const userObj = ref({}); // 유저 정보 가져오기
+        userObj.value = getUserObj.userObj; 
 
         function replaceImage(e) { // 대체 유저 이미지
             e.target.src = require(`@/assets/images/AnonymousUser.png`); 
@@ -77,14 +79,14 @@ export default {
         }
 
         const logout = () => { // 로그아웃
-            store.commit("REMOVE_USER_INFO");
-            getUserObj.value = {};
+            triggerLogout();
+            userObj.value = {};
             window.location.replace('/login');
         }
 
         return {
             moveToLogin,
-            getUserObj,
+            userObj,
             replaceImage,
             moveToUser,
             logout,

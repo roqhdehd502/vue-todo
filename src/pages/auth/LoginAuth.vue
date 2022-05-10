@@ -62,19 +62,18 @@
 
 <script> 
 import { ref } from 'vue';
-import { useStore } from 'vuex';
 
 import axios from 'axios';
 
-
+import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default { 
     setup() {
-        const store = useStore();
-        
         const userId = ref('');
         const userPassword = ref('');
+
+        const { triggerLogin } = useAuth();
 
         const {
             showToast,
@@ -91,8 +90,7 @@ export default {
             };
             try {
                 const res = await axios.get(`http://localhost:3000/users`, userData);
-                const resData = res.data;
-                const correct = resData.find((correctUser) => {
+                const correct = res.data.find((correctUser) => {
                     return (
                         correctUser.userId === userData.userId 
                         && correctUser.userPassword === userData.userPassword
@@ -103,7 +101,11 @@ export default {
                     userId.value = '';
                     userPassword.value = '';
                 } else {
-                    store.commit("SET_USER_INFO", correct);
+                    triggerLogin({
+                        id: correct.id,
+                        userId: correct.userId,
+                        userImage: correct.userImage,
+                    });
                     window.location.replace('/');
                 }
             } catch (err) { 

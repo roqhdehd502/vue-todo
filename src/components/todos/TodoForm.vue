@@ -16,7 +16,7 @@
           placeholder="추가할 Todo 입력"
           maxlength="30"
         />
-        <button class="btn btn-primary" type="submit">
+        <button class="btn btn-success" type="submit">
           추가
         </button>
       </div>

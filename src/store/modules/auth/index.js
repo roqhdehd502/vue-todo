@@ -27,12 +27,13 @@ export default {
             sessionStorage.removeItem('userToken');
         } 
     },
-
+    
     actions: {
-        
-    },
-
-    getters: {
-
+        triggerLogin({ commit }, payload) { // 로그인 액션
+            commit('SET_USER_INFO', payload);
+        },
+        triggerLogout({ commit }) { // 로그아웃 액션
+            commit('REMOVE_USER_INFO');
+        }
     }
 } 
