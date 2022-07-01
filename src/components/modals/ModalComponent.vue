@@ -1,10 +1,3 @@
-<!-- 
-작성일 : 2022.04.30
-작성자 : 부설연구소 사원 나민우
-설명 : 모달 컴포넌트
--->
-
-
 <template>
   <div class="modal-wrapper">
     <div class="modal-dialog">

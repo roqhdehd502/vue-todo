@@ -1,10 +1,3 @@
-<!--
-작성일 : 2022.04.28
-작성자 : 부설연구소 사원 나민우
-설명 : Todo 폼
--->
-
-
 <template>
   <form @submit="addTodo">
     <div class="d-flex">

@@ -10,8 +10,8 @@
 
 
 <script>
-import NavigationBar from '@/components/functional_components/NavigationBar.vue'; // 네비게이션 바 컴포넌트
-import Toast from '@/components/functional_components/ToastComponent.vue'; // 토스트 컴포넌트
+import NavigationBar from '@/components/header/NavigationBar.vue';
+import Toast from '@/components/toasts/ToastComponent.vue';
 
 export default {
   components: {

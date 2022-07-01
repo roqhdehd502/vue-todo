@@ -1,10 +1,3 @@
-/**
- * 작성일 : 2022.05.03
- * 작성자 : 부설연구소 사원 나민우
- * 설명 : Vuex store toast 모듈
- */
-
-
 export default {
     namespaced: true,
     

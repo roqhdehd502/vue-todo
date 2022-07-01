@@ -1,10 +1,3 @@
-/**
- * 작성일 : 2022.05.04
- * 작성자 : 부설연구소 사원 나민우
- * 설명 : Vuex store 인증 모듈
- */
-
-
 import { v4 as uuidv4 } from 'uuid'; // 인증 토큰 발급용(JWT 임시 대체)
 
 export default { 

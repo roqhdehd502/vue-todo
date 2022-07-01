@@ -1,10 +1,3 @@
-<!--
-작성일 : 2022.05.03
-작성자 : 부설연구소 사원 나민우
-설명 : 페이징 컴포넌트
--->
-
-
 <template>
   <nav>
     <ul class="pagination justify-content-center">

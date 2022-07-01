@@ -1,10 +1,3 @@
-<!--
-작성일 : 2022.04.28
-작성자 : 부설연구소 사원 나민우
-설명 : Todo 리스트
--->
-
-
 <template>
     <div 
       v-for="(todo, index) in todos" 
