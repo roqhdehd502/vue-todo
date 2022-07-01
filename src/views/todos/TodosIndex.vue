@@ -1,10 +1,3 @@
-<!-- 
-작성일 : 2022.04.30
-작성자 : 부설연구소 사원 나민우
-설명 : to-do 페이지 index
--->
-
-
 <template>
   <div>
     <div class="card">
@@ -86,8 +79,8 @@ import router from '@/router';
 import axios from 'axios';
 
 import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
-import ToDoList from '@/components/todos/TodoList.vue'; // Todo 목록 컴포넌트
-import TodoForm from '@/components/todos/TodoForm.vue'; // Todo form 컴포넌트
+import ToDoList from '@/components/Main/todos/TodoList.vue'; // Todo 목록 컴포넌트
+import TodoForm from '@/components/Main/todos/TodoForm.vue'; // Todo form 컴포넌트
 
 import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블

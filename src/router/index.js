@@ -3,22 +3,22 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 const routes = [{
     path: '/',
     name: 'TodosList',
-    component: () => import('../pages/todos/TodosIndex.vue'),
+    component: () => import('../views/todos/TodosIndex.vue'),
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../pages/auth/LoginAuth.vue'),
+    component: () => import('../views/auth/LoginAuth.vue'),
   },
   {
     path: '/todo/:id',
     name: 'Todo',
-    component: () => import('../pages/todos/_id.vue'),
+    component: () => import('../views/todos/_id.vue'),
   },
   {
     path: '/user/:id',
     name: 'User',
-    component: () => import('../pages/users/_id.vue'),
+    component: () => import('../views/users/_id.vue'),
   },
 ]
 

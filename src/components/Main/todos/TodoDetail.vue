@@ -29,7 +29,7 @@
 
 
 <script>
-import Modal from '../functional_components/ModalComponent.vue'; // 모달 컴포넌트
+import Modal from '../../modals/ModalComponent.vue'; // 모달 컴포넌트
 
 export default {
   components: {
