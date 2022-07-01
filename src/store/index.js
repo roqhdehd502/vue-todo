@@ -1,17 +1,18 @@
  import { createStore } from 'vuex';
  import createPersistedState from 'vuex-persistedstate';
- 
- import modules from './modules'; // Vuex store 관련 모듈
- 
+
+ import auth from './modules/auth';
+ import toast from './modules/toast';
+
  export default createStore({
      modules: {
-         toast: modules.toast,
-         auth: modules.auth,
+         auth,
+         toast,
      },
-     
+
      plugins: [
-        createPersistedState({ // persisted state를 이용한 로컬 데이터 저장
-            paths: ["auth"],
-        }),
+         createPersistedState({
+             paths: ["auth"],
+         }),
      ],
  })
