@@ -9,9 +9,10 @@
 </template>
 
 
+
 <script>
-import NavigationBar from '@/components/header/NavigationBar.vue';
-import Toast from '@/components/toasts/ToastComponent.vue';
+import NavigationBar from "@/components/header/NavigationBar.vue";
+import Toast from "@/components/toasts/ToastComponent.vue";
 
 export default {
   components: {
@@ -20,20 +21,18 @@ export default {
   },
 
   setup() {
-
-    return { 
-      
-    }
-  }
-}
+    return {};
+  },
+};
 </script>
 
 
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap");
 
 #app {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

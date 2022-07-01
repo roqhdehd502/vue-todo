@@ -1,11 +1,7 @@
 import axios from 'axios'
 
 const config = {
-  baseURL: window.isProd
-    ? window.tradebotConfig
-      ? window.tradebotConfig.admin_server
-      : process.env.VUE_APP_ADMIN_SERVER
-    : process.env.VUE_APP_ADMIN_SERVER,
+  baseURL: process.env.VUE_APP_SERVER,
   headers: {
     'Content-Type': 'application/json; charset=utf-8'
   },
