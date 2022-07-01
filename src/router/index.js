@@ -1,10 +1,3 @@
-/**
- * 작성일 : 2022.04.30
- * 작성자 : 부설연구소 나민우
- * 설명 : 라우터 인덱스
- */
-
-
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [{
