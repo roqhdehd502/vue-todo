@@ -21,7 +21,7 @@
                     :src="userObj.userImage"
                     @error="replaceImage"
                     class="profile-img"
-                    @click="moveToUser(userObj.id)"
+                    @click="moveToUser(userObj.uid)"
                 />
                 <button 
                     type="button" 
@@ -40,14 +40,21 @@
 import { ref } from 'vue';
 import router from '@/router';
 
-import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
+
+//import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
+
+import { 
+  getAuth
+  , onAuthStateChanged
+  , signOut 
+} from "firebase/auth";
+
 
 export default {
     setup() {
-        const { 
-            getUserObj,
-            triggerLogout, 
-        } = useAuth(); // 로그인 유저 정보
+        // const { 
+        //     getUserObj,
+        // } = useAuth(); // 로그인 유저 정보
 
         const moveToLogin = () => { // 로그인 페이지로 이동
             router.push({
@@ -55,26 +62,43 @@ export default {
             });
         }
 
-        const userObj = ref({}); // 유저 정보 가져오기
-        userObj.value = getUserObj.userObj; 
+        const userObj = ref(null); // 유저 정보 가져오기
+
+        const isLogin = () => {
+          onAuthStateChanged(getAuth(), (user) => {
+            if (user) {
+              userObj.value = user;
+              console.log(userObj.value.uid);
+              return;
+            } else {
+              return;
+            }
+          });
+        }
+        isLogin();
+
+        ////userObj.value = getUserObj.userObj; 
 
         function replaceImage(e) { // 대체 유저 이미지
             e.target.src = require(`@/assets/images/AnonymousUser.png`); 
         }
 
-        const moveToUser = (getId) => { // 유저 상세 페이지 이동
+        const moveToUser = (uid) => { // 유저 상세 페이지 이동
              router.push({
                 name: 'User',
                 params: {
-                    id: getId
+                    id: uid
                 }
             });
         }
 
         const logout = () => { // 로그아웃
-            triggerLogout();
-            userObj.value = {};
+          signOut(getAuth()).then(() => {
+            userObj.value = null;
             window.location.replace('/login');
+          }).catch((error) => {
+            console.log("error message: ", error.message)
+          });
         }
 
         return {

@@ -1,10 +1,3 @@
-<!-- 
-작성일 : 2022.05.04
-작성자 : 부설연구소 사원 나민우
-설명 : 로그인 페이지
--->
-
-
 <template> 
     <div class="container container-style"> 
         <div class="row">
@@ -13,21 +6,20 @@
                     Coin Todos
                 </h1>
             </router-link>
-            <div class="card card-style"> 
-                <form @submit="loginSubmit"> 
+            <div class="card card-style">
                     <div class="container justify-content-center">
                         <div class="row">
                             <div class="form-floating mb-3">
                                 <input 
-                                    v-model="userId"
-                                    type="text" 
-                                    id="floatingId" 
+                                    v-model="userEmail"
+                                    type="email" 
+                                    id="floatingEmail" 
                                     class="form-control" 
-                                    placeholder="아이디"
+                                    placeholder="이메일"
                                     required
                                 >
-                                <label for="floatingId">
-                                    아이디
+                                <label for="floatingEmail">
+                                    이메일
                                 </label>
                             </div>
                             <div class="form-floating mb-5">
@@ -45,12 +37,11 @@
                             </div>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <button @click="loginSubmit" type="button" class="btn btn-success btn-lg">
                                 로그인
                             </button>
                         </div>
                     </div>
-                </form> 
             </div>
             <div class="extra-style">
                 <label>회원가입</label>
@@ -60,62 +51,60 @@
 </template> 
 
 
+
 <script> 
 import { ref } from 'vue';
+import router from '@/router';
 
-import axios from 'axios';
+import { 
+  getAuth
+  , signInWithEmailAndPassword
+  , onAuthStateChanged 
+} from "firebase/auth";
 
-import { useAuth } from '@/composables/auth'; // 유저 인증 컴포저블
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+import { useToast } from '@/composables/toast';
 
 export default { 
     setup() {
-        const userId = ref('');
+        const userEmail = ref('');
         const userPassword = ref('');
-
-        const { triggerLogin } = useAuth();
 
         const {
             showToast,
             toastMessage,
             toastAlertType,
             triggerToast,
-        } = useToast(); // 변경 사항시 알림
+        } = useToast();
+
+        const isLogin = () => {
+          onAuthStateChanged(getAuth(), (user) => {
+            if (user) {
+              console.log("Already Login!")
+              router.replace('/');
+              return;
+            } else {
+              return;
+            }
+          });
+        }
+        isLogin();
         
-        const loginSubmit = async (e) => { // 로그인 과정 인증
-            e.preventDefault();
-            const userData = {
-                userId: userId.value,
-                userPassword: userPassword.value,
-            };
-            try {
-                const res = await axios.get(`http://localhost:3000/users`, userData);
-                const correct = res.data.find((correctUser) => {
-                    return (
-                        correctUser.userId === userData.userId 
-                        && correctUser.userPassword === userData.userPassword
-                    );
-                });
-                if(correct === undefined || correct === null || correct === "") {
-                    triggerToast('올바르지 않은 계정입니다!', 'danger');
-                    userId.value = '';
-                    userPassword.value = '';
-                } else {
-                    triggerLogin({
-                        id: correct.id,
-                        userId: correct.userId,
-                        userImage: correct.userImage,
-                    });
-                    window.location.replace('/');
-                }
-            } catch (err) { 
-                err.value = '올바르지 않은 접근입니다!';
-                triggerToast(err.value, 'danger');
-            }     
+        const loginSubmit = () => {
+            signInWithEmailAndPassword(getAuth(), userEmail.value, userPassword.value)
+              .then((userCredential) => {
+                console.log("userCredential user: ", userCredential.user)
+                router.replace('/');
+                return;
+              })
+              .catch((error) => {
+                console.log(error.message);
+                triggerToast('올바르지 않은 계정입니다!', 'danger');
+                return;
+              });    
         };
 
         return {
-            userId,
+            userEmail,
             userPassword,
             loginSubmit,
 
@@ -126,6 +115,7 @@ export default {
     }
 }; 
 </script>
+
 
 
 <style scoped>
