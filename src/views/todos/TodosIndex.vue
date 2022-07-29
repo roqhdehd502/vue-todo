@@ -27,7 +27,7 @@
         @delete-todo="deleteTodo" 
       /><br />
 
-      <nav>
+      <!-- <nav>
         <ul class="pagination justify-content-center">
           <li v-if="currentPage !== 1" class="page-item">
             <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
@@ -50,7 +50,7 @@
             </a>
           </li>
         </ul>
-      </nav>
+      </nav> -->
     </div>
     <div v-else class="input-group mb-3">
       <input 
@@ -73,17 +73,36 @@
 
 
 <script>
-import { ref, computed, watch } from 'vue';
+import { 
+  ref
+  , watch
+  //, onMounted
+} from 'vue';
 import router from '@/router';
 
-import axios from 'axios';
+import { 
+  getAuth
+  , onAuthStateChanged
+} from "firebase/auth";
+import { 
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  //getDocs,
+  addDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 
 import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
 import ToDoList from '@/components/Main/todos/TodoList.vue'; // Todo 목록 컴포넌트
 import TodoForm from '@/components/Main/todos/TodoForm.vue'; // Todo form 컴포넌트
 
-import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+
 
 export default {
   components: {
@@ -93,109 +112,129 @@ export default {
   },
 
   setup() {
-    const isLogin = useAuth().isLogin(); // 로그인 여부
-    const getUserId = useAuth().getUserObj.userObj.userId; // 로그인한 유저 Id
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast,
+    } = useToast();
 
-    const moveToLogin = () => { // 로그인 페이지로 이동
-      router.push({
-        name: 'Login',
+    let timeout = null;
+    const isLogin = ref(false);
+    const userObj = ref(null);
+    const searchTodo = ref('');
+    const todos = ref([]);
+
+    const loginStatus = () => {
+      onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+          isLogin.value = true;
+          userObj.value = user.uid;
+          getTodos(userObj.value)
+          return;
+        } else {
+          isLogin.value = false;
+          return;
+        }
       });
     }
-
-    let limitInPage = 3; // to-do 페이징
-    const numberOfTodos = ref(0); 
-    const currentPage = ref(1);
-    const numberOfPages = computed(() => {
-      return Math.ceil(numberOfTodos.value / limitInPage);
-    });
-
-    let timeout = null;  // 검색할 to-do 리스트 키워드
-    const searchTodo = ref('');
+    loginStatus();
+    
     const searchTodoKeyup = () => {
       clearTimeout(timeout);
-      getTodos(1);
+      //getTodos(1);
     };
 
-    watch(searchTodo, () => { // to-do 리스트 검색
+    watch(searchTodo, () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
-        getTodos(1);
+        //getTodos(1);
       }, 100);
-    });
+    });    
     
-    const todos = ref([]); // to-do 리스트 (본인이 작성한 Todo 리스트만 출력)
-    const getTodos = async (page = currentPage.value) => {
-      currentPage.value = page;
+    const getTodos = async (uid) => {
       try {
-        const res =  await axios.get(
-          `http://localhost:3000/todos?_sort=id&_order=desc&enabled=true&userId=${getUserId}&subject_like=${searchTodo.value}&_page=${currentPage.value}&_limit=${limitInPage}`
+        const q = query(
+          collection(db, "todos")
+          , where("userId", "==", uid)
+          , where("enabled", "==", true)
+          , orderBy("uploadDate", "desc")
         );
-        numberOfTodos.value = res.headers['x-total-count'];
-        todos.value = res.data;
+        onSnapshot(q, (querySnapshot) => {
+          todos.value = [];
+          querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            data.docId = doc.id;
+            //todos.value.push(doc.data());
+            todos.value.push(data);
+          })
+        });
       } catch(err) {
         err.value = '오류로 인해 불러올 수 없습니다!';
         triggerToast(err.value, 'danger');
       }
-    }
-    getTodos();
+    };
 
-    const addTodo = async (todo) => { // to-do 추가
+    const addTodo = async (todo) => {
       try {
-        await axios.post('http://localhost:3000/todos', {
+        await addDoc(collection(db, "todos"), {
+          todoId: todo.todoId,
           userId: todo.userId,
           subject: todo.subject,
+          uploadDate: todo.uploadDate,
           isCompleted: todo.isCompleted,
           enabled: todo.enabled,
         });
-        triggerToast('성공적으로 추가 되었습니다.');
-        getTodos(1);
       } catch(err) {
         err.value = '오류로 인해 추가할 수 없습니다!';
         triggerToast(err.value, 'danger');
       }
     };
 
-    const deleteTodo = async (getId) => { // to-do 삭제 (실제로는 enabled 값만 바꿔서 비활성화)
+    const toggleTodo = async (index, isChecked) => {
+      const docId = todos.value[index].docId;
       try {
-        await axios.patch(`http://localhost:3000/todos/${getId}`, {
+        const docRef = doc(db, "todos", docId);
+        await updateDoc(docRef, {
+          isCompleted: isChecked
+        });
+        //todos.value[index].iscompleted = isChecked;
+        triggerToast('성공적으로 변경 되었습니다.');
+      } catch(err) {
+        console.log(err.message);
+        err.value = '오류로 인해 변경할 수 없습니다!'
+        triggerToast(err.value, 'danger');
+      }
+    };
+
+    const deleteTodo = async (docId) => {
+      try {
+        const docRef = doc(db, "todos", docId);
+        await updateDoc(docRef, {
           enabled: false
         });
         triggerToast('성공적으로 삭제 되었습니다.');
-        getTodos(1);
       } catch(err) {
         err.value = '오류로 인해 삭제할 수 없습니다!'
         triggerToast(err.value, 'danger');
       }
     };
 
-    const toggleTodo = async (index, checked) => { // to-do 토글
-      const getId = todos.value[index].id;
-      try {
-        await axios.patch(`http://localhost:3000/todos/${getId}`, {
-          isCompleted: checked
-        });
-        todos.value[index].iscompleted = checked;
-        triggerToast('성공적으로 변경 되었습니다.');
-      } catch(err) {
-        err.value = '오류로 인해 변경할 수 없습니다!'
-        triggerToast(err.value, 'danger');
-      }
-    };
+    const moveToLogin = () => {
+      router.push({
+        name: 'Login',
+      });
+    }
 
-    const {
+    return {
       showToast,
       toastMessage,
       toastAlertType,
-      triggerToast,
-    } = useToast(); // 변경 사항시 알림
 
-    return {
       isLogin,
       moveToLogin,
 
-      numberOfPages,
-      currentPage,
-
+      userObj,
       todos,
       getTodos,
       addTodo,
@@ -203,10 +242,6 @@ export default {
       toggleTodo,
       searchTodo,
       searchTodoKeyup,
-
-      showToast,
-      toastMessage,
-      toastAlertType,
     };
   }
 }

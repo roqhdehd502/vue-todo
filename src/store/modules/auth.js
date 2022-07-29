@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'; // 인증 토큰 발급용(JWT 임시 대체)
-
 export default { 
     state: {
         userObj: {},
@@ -8,8 +6,7 @@ export default {
     mutations: { 
         SET_USER_INFO(state, payload) { // 유저 정보 스토리지 SET
             state.userObj = payload;
-            const token = uuidv4(); // 백엔드에서 토큰을 가져온 것으로 가정
-            sessionStorage.setItem('userToken', JSON.stringify(token));
+            sessionStorage.setItem('userToken', JSON.stringify(state.userObj));
         },
         MODIFY_USER_INFO(state, payload) { // 유저 정보 스토리지 변경
             state.userObj = payload;

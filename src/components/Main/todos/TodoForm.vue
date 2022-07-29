@@ -1,30 +1,32 @@
 <template>
-  <form @submit="addTodo">
-    <div class="d-flex">
-      <div class="input-group mb-3">
-        <input 
-          class="form-control"
-          type="text" 
-          v-model="todo"
-          placeholder="추가할 Todo 입력"
-          maxlength="30"
-        />
-        <button class="btn btn-success" type="submit">
-          추가
-        </button>
-      </div>
+  <div class="d-flex">
+    <div class="input-group mb-3">
+      <input 
+        class="form-control"
+        type="text" 
+        v-model="todo"
+        placeholder="추가할 Todo 입력"
+        maxlength="30"
+      />
+      <button @click="addTodo" class="btn btn-success" type="button">
+        추가
+      </button>
     </div>
-    <div class="alert alert-danger" v-show="hasError">
-      내용을 입력해주세요.
-    </div>
-  </form>
+  </div>
 </template>
+
 
 
 <script>
 import { ref } from 'vue';
 
-import { useAuth } from '@/composables/auth'; // 유저 인증정보 컴포저블
+import { 
+  getAuth
+  , onAuthStateChanged
+} from "firebase/auth";
+import { v4 as uuidv4 } from 'uuid';
+
+import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default { 
   emits: [
@@ -32,38 +34,57 @@ export default {
   ],
 
   setup(props, { emit }) {
-    const getUserId = useAuth().getUserObj.userObj.userId; // 로그인한 유저 Id
+    const userId = ref(null);
+    const getUserId = () => {
+      onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+          userId.value = user.uid;
+          return;
+        } else {
+          return;
+        }
+      });
+    }
+    getUserId();
 
     const todo = ref(''); // to-do 내용
-    const hasError = ref(false); // 공백 입력 방지 에러 체크 변수
-    
-    const addTodo = (e) => { // to-do list 등록
-      e.preventDefault();
-
-      if (todo.value === '') {
-        hasError.value = true;
+    const addTodo = () => { // to-do list 등록
+      if (todo.value === '' || todo.value === null) {
+        triggerToast('Todo 내용을 입력해주세요!', 'danger');
       } else {
         emit('add-todo', {
-            userId: getUserId,
+            todoId: uuidv4(),
+            userId: userId.value,
             subject: todo.value,
+            uploadDate: Date.now(),
             isCompleted: false,
             enabled: true,
         });
-        hasError.value = false;
         todo.value = '';
       }
     }
 
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast,
+    } = useToast(); // 변경 사항시 알림
+
     return {
       todo,
       addTodo,
-      hasError,
+
+      showToast,
+      toastMessage,
+      toastAlertType,
     };
   }
 }
 </script>
 
 
-<style>
+
+<style scoped>
 
 </style>

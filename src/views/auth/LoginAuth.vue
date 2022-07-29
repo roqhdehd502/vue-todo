@@ -3,7 +3,7 @@
         <div class="row">
             <router-link :to="{ name: 'TodosList' }" class="router-link-style">
                 <h1 class="h1-style">
-                    Coin Todos
+                    로그인
                 </h1>
             </router-link>
             <div class="card card-style">
@@ -44,7 +44,7 @@
                     </div>
             </div>
             <div class="extra-style">
-                <label>회원가입</label>
+                <router-link to="/signup">회원가입</router-link>
             </div>
         </div> 
     </div> 
@@ -143,5 +143,9 @@ export default {
 }
 .extra-style {
     text-align: center;
+}
+.extra-style a {
+    text-decoration: none;
+    color: black;
 }
 </style>

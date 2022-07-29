@@ -1,12 +1,12 @@
 <template>
     <div 
       v-for="(todo, index) in todos" 
-      :key="todo.id" 
+      :key="todo.docId ? todo.docId : index" 
       class="card mt-2"
     >
       <div 
         class="card-body p-2 d-flex align-items-center todo-cursor"
-        @click="moveToPage(todo.id)"
+        @click="moveToPage(todo.docId)"
       >
         <div class="flex-glow-1">
           <input 
@@ -28,7 +28,7 @@
               <button 
                 class="btn btn-danger btm-sm" 
                 type="button" 
-                @click.stop="openModal(todo.id)"
+                @click.stop="openModal(todo.docId)"
               >
                 <span class="material-icons">
                   delete_outline
@@ -75,44 +75,45 @@ export default {
   ],
 
   setup(props, { emit }) {
-    const moveToPage = (getId) => { // to-do 상세 페이지 이동
-      router.push({
-        name: 'Todo',
-        params: {
-          id: getId
-        }
-      });
-    }
+    const docId = ref(null);
+    const showModal = ref(false);
 
-    const todoId = ref(null); // to-do id
-
-    const showModal = ref(false); // to-do 모달
-    const openModal = (getId) => {
-      todoId.value = getId;
+    const openModal = (id) => {
+      docId.value = id;
       showModal.value = true;
     };
+
     const closeModal = () => {
-      todoId.value = null;
+      docId.value = null;
       showModal.value = false;
     };
     
     const deleteTodo = () => { // to-do 삭제
-      emit('delete-todo', todoId.value);
+      emit('delete-todo', docId.value);
+      docId.value = null;
       showModal.value = false;
-      todoId.value = null;
     };
 
     const toggleTodo = (index, event) => { // to-do 토글
       emit('toggle-todo', index, event.target.checked);
     };
 
+    const moveToPage = (docId) => { // to-do 상세 페이지 이동
+      router.push({
+        name: 'Todo',
+        params: {
+          id: docId
+        }
+      });
+    }
+
     return {
-      moveToPage,
       showModal,
       openModal,
       closeModal,
       deleteTodo,
       toggleTodo,
+      moveToPage,
     }
   }
 }
