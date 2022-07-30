@@ -88,17 +88,17 @@ export default {
       showModal.value = false;
     };
     
-    const deleteTodo = () => { // to-do 삭제
+    const deleteTodo = () => {
       emit('delete-todo', docId.value);
       docId.value = null;
       showModal.value = false;
     };
 
-    const toggleTodo = (index, event) => { // to-do 토글
+    const toggleTodo = (index, event) => {
       emit('toggle-todo', index, event.target.checked);
     };
 
-    const moveToPage = (docId) => { // to-do 상세 페이지 이동
+    const moveToPage = (docId) => {
       router.push({
         name: 'Todo',
         params: {

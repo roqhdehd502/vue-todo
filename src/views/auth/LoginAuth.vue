@@ -92,7 +92,7 @@ export default {
         const loginSubmit = () => {
             signInWithEmailAndPassword(getAuth(), userEmail.value, userPassword.value)
               .then((userCredential) => {
-                console.log("userCredential user: ", userCredential.user)
+                console.log(userCredential.user.email)
                 router.replace('/');
                 return;
               })

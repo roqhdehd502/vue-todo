@@ -7,51 +7,46 @@
     <span class="visually-hidden">Loading...</span>
   </div>
 
-  <form 
-    v-else 
-    class="form-style"
-    @submit="onUpdate"
-  >
-    <div class="row">
-      <div class="col-8">
-        <div class="form-group">
-          <label>목표</label>
-          <input 
-            v-model="todo.subject"
-            type="text" 
-            class="form-control" 
-          />
-        </div>
+  <div v-else class="row form-style">
+    <div class="col-8">
+      <div class="form-group">
+        <label>목표</label>
+        <input 
+          v-model="todo.subject"
+          type="text" 
+          class="form-control" 
+        />
       </div>
-      <div class="col-4">
-        <div class="form-group">
-          <label>상태</label>
-          <div>
-            <button 
-              type="button"
-              class="btn"
-              :class="todo.isCompleted ? 'btn-success' : 'btn-outline-success'"
-              @click="toggleTodoStatus"
-            >
-              {{ todo.isCompleted ? '완료됨' : '완료하기' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div><br />
-    <div class="row g-2">
-      <button 
-        type="submit" 
-        class="btn btn-success"
-        :disabled="!isTodoUpdated"
-      >
-        저장
-      </button>
-      <button class="btn btn-secondary" @click="moveToTodoListPage">
-        이전
-      </button>
     </div>
-  </form>
+    <div class="col-4">
+      <div class="form-group">
+        <label>상태</label>
+        <div>
+          <button 
+            type="button"
+            class="btn"
+            :class="todo.isCompleted ? 'btn-success' : 'btn-outline-success'"
+            @click="toggleTodoStatus"
+          >
+            {{ todo.isCompleted ? '완료됨' : '완료하기' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div><br />
+  <div class="row g-2">
+    <button
+      @click="onUpdate"
+      type="button" 
+      class="btn btn-success"
+      :disabled="!isTodoUpdated"
+    >
+      저장
+    </button>
+    <button type="button" class="btn btn-secondary" @click="moveToTodoListPage">
+      이전
+    </button>
+  </div>
 </template>
 
 
@@ -60,35 +55,39 @@
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import _ from 'lodash';
-import axios from 'axios';
 
+import { db } from "../../firebase";
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
-  components: {
-    
-  },
-  
   setup() {
     const route = useRoute();
     const router = useRouter();
 
-    const moveToTodoListPage = () => { // to-do 리스트 페이지 이동
-      router.push({
-        name: 'TodosList'
-      });
-    }
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast
+    } = useToast(); // 변경 사항시 알림
     
-    const getId = route.params.id; // to-do 정보 불러오기
+    const docId = route.params.id; // to-do 정보 불러오기
     const loading = ref(true);
     const todo = ref(null);
     const originTodo = ref(null);
+    
     const getTodo = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/todos/${getId}`);
-        todo.value = { ...res.data };
-        originTodo.value = { ...res.data };
+        const docRef = doc(db, "todos", docId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          todo.value = { ...docSnap.data() };
+          originTodo.value = { ...docSnap.data() };
+        } else {
+          triggerToast('내용을 불러올 수 없습니다!', 'danger');
+        }
         loading.value = false;
       } catch(err) {
         err.value = '내용을 불러올 수 없습니다!';
@@ -97,7 +96,7 @@ export default {
     };
     getTodo();
 
-    const isTodoUpdated = computed(() => { // to-do 토글 상태
+    const isTodoUpdated = computed(() => {
       return !_.isEqual(todo.value, originTodo.value);
     });
     const toggleTodoStatus = () => { 
@@ -109,16 +108,16 @@ export default {
       }
     }
 
-    const onUpdate = async (e) => { // to-do 업데이트
-      e.preventDefault();
+    const onUpdate = async () => {
       try {
-        const res = await axios.put(`http://localhost:3000/todos/${getId}`, {
+        const docRef = doc(db, "todos", docId);
+        await updateDoc(docRef, {
           userId: originTodo.value.userId,
           subject: todo.value.subject,
           isCompleted: todo.value.isCompleted,
           enabled: originTodo.value.enabled,
         });
-        originTodo.value = {...res.data};
+        //originTodo.value = {...res.data};
         triggerToast('성공적으로 변경 되었습니다.');
         router.push({
           name: 'TodosList'
@@ -129,12 +128,11 @@ export default {
       }
     }
 
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast
-    } = useToast(); // 변경 사항시 알림
+    const moveToTodoListPage = () => {
+      router.push({
+        name: 'TodosList'
+      });
+    }
 
     return {
       loading,

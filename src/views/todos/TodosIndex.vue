@@ -165,7 +165,6 @@ export default {
           querySnapshot.forEach((doc) => {
             let data = doc.data();
             data.docId = doc.id;
-            //todos.value.push(doc.data());
             todos.value.push(data);
           })
         });
@@ -198,7 +197,6 @@ export default {
         await updateDoc(docRef, {
           isCompleted: isChecked
         });
-        //todos.value[index].iscompleted = isChecked;
         triggerToast('성공적으로 변경 되었습니다.');
       } catch(err) {
         console.log(err.message);
