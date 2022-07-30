@@ -4,33 +4,32 @@
             Coin Todos 
         </router-link>
         <div> 
-            <div 
-              v-if="isLogin"
-              class="navbar-brand home-link"
+          <div 
+            v-if="isLogin"
+            class="navbar-brand home-link"
+          >
+            <img 
+              :src="userObj.photoURL ? userObj.photoURL : require(`@/assets/images/AnonymousUser.png`)"
+              class="profile-img"
+              @click="moveToUser(userObj.uid)"
+            />
+            <button 
+                type="button" 
+                class="btn btn-warning btn-sm"
+                @click="logout"
             >
-              <img 
-                :src="userObj.userImage"
-                @error="replaceImage"
-                class="profile-img"
-                @click="moveToUser(userObj.uid)"
-              />
-              <button 
-                  type="button" 
-                  class="btn btn-warning btn-sm"
-                  @click="logout"
-              >
-                  로그아웃
-              </button>
-            </div>
-            <div v-else class="navbar-brand home-link">
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                @click="moveToLogin"
-              >
-                로그인
-              </button> 
-            </div>
+                로그아웃
+            </button>
+          </div>
+          <div v-else class="navbar-brand home-link">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="moveToLogin"
+            >
+              로그인
+            </button> 
+          </div>
         </div>
     </nav>
 </template>
@@ -58,7 +57,6 @@ export default {
             if (user) {
               isLogin.value = true;
               userObj.value = user;
-              console.log("userObj", userObj.value)
             } else {
               userObj.value = null;
             }
@@ -66,17 +64,13 @@ export default {
         }
         userStatus();
 
-        const replaceImage = (e) => { // 대체 유저 이미지
-            e.target.src = require(`@/assets/images/AnonymousUser.png`); 
-        }
-
-        const moveToLogin = () => { // 로그인 페이지로 이동
+        const moveToLogin = () => {
             router.push({
                 name: 'Login',
             });
         }
 
-        const moveToUser = (uid) => { // 유저 상세 페이지 이동
+        const moveToUser = (uid) => {
             router.push({
               name: 'User',
               params: {
@@ -85,7 +79,7 @@ export default {
             });
         }
 
-        const logout = () => { // 로그아웃
+        const logout = () => {
           signOut(getAuth()).then(() => {
             userObj.value = null;
             window.location.replace('/login');
@@ -99,7 +93,6 @@ export default {
             userObj,
 
             moveToLogin,
-            replaceImage,
             moveToUser,
             logout,
         }

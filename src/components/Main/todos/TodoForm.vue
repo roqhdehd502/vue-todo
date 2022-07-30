@@ -24,7 +24,6 @@ import {
   getAuth
   , onAuthStateChanged
 } from "firebase/auth";
-import { v4 as uuidv4 } from 'uuid';
 
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
@@ -53,7 +52,6 @@ export default {
         triggerToast('Todo 내용을 입력해주세요!', 'danger');
       } else {
         emit('add-todo', {
-            todoId: uuidv4(),
             userId: userId.value,
             subject: todo.value,
             uploadDate: Date.now(),

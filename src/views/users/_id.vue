@@ -1,10 +1,3 @@
-<!-- 
-작성일 : 2022.05.03
-작성자 : 부설연구소 사원 나민우
-설명 : user 상세 페이지
--->
-
-
 <template>
     <div 
         v-if="loading && !isModifyMode"
@@ -20,87 +13,75 @@
     >
         <div class="row">
             <div class="col">
-                <h1 class="display-3">{{ userObj.userName }}</h1>
-                <h4>{{ userObj.nickName }}</h4>
+                <h1 class="display-3">{{ userObj.displayName ? userObj.displayName : userObj.email }}</h1>
+                <h4>{{ userObj.email }}</h4>
             </div>
         </div>
-        <div class="row profile-bio">
-            <p class="lead">
-                {{ userObj.userBio }}
-            </p>
+        <div class="row mt-3">
+            <img :src="userObj.photoURL ? userObj.photoURL : require(`@/assets/images/AnonymousUser.png`)" class="user-image" />
         </div>
-        <div class="row">
-            <img :src="userObj.userImage" class="user-image" />
-        </div>
-        <div class="row profile-aboutme">
-            <h3 class="profile-aboutme-title">About me</h3>
-            <hr />
-            <p class="lead">
-                {{ userObj.userAbout }}
-            </p>
-        </div>
-        <div class="row g-2">
+        <div class="row mt-3 g-3">
             <button @click="modifyMode" class="btn btn-success">프로필수정</button>
             <button @click="moveToTodoListPage" class="btn btn-primary">메인페이지</button>
         </div>
     </div>
 
-    <div v-if="!loading && isModifyMode" class="modify-mode-style">
-        <form @submit="onUpdate">
-            <label>닉네임</label>
-            <div class="input-group mb-3">
-                <input 
-                    v-model="userObj.nickName"
-                    type="text" 
-                    class="form-control" 
-                    required
-                />
-            </div>
-            <label>상태</label>
-            <div class="input-group mb-3">
-                <input 
-                    v-model="userObj.userBio"
-                    type="text" 
-                    class="form-control" 
-                    required
-                />
-            </div>
-            <label>자기소개</label>
-            <div class="input-group mb-3">
-                <textarea 
-                    v-model="userObj.userAbout" 
-                    class="form-control"
-                    style="resize: none;"
-                    required
-                ></textarea>
-            </div>
-            <div class="row g-2">
-                <button 
-                    type="submit" 
-                    class="btn btn-success"
-                >
-                    저장
-                </button>
-                <button class="btn btn-secondary" @click="modifyMode">
-                    취소
-                </button>
-            </div>
-        </form>
+    <div 
+        v-if="!loading && isModifyMode" 
+        class="modify-mode-style"
+    >
+        <label>닉네임</label>
+        <div class="input-group mb-3">
+            <input 
+                v-model="userObj.displayName"
+                type="text" 
+                class="form-control" 
+                required
+            />
+        </div>
+        <label>프로필 사진</label>
+        <div class="input-group mb-3">
+            <input 
+              type="file" 
+              id="user-image"
+              class="form-control" 
+              accept="image/gif, image/jpeg, image/png"
+              required
+            >
+        </div>
+        <div class="row g-2">
+            <button 
+                @click="onUpdate"
+                type="button" 
+                class="btn btn-success"
+            >
+                저장
+            </button>
+            <button class="btn btn-secondary" @click="modifyMode">
+                취소
+            </button>
+        </div>
     </div>
 </template>
 
 
 <script>
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
-import axios from 'axios';
+import {
+  useRouter 
+} from 'vue-router';
 
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+import { 
+  getAuth, 
+  updateProfile 
+} from "firebase/auth";
+import * as firebaseStorage from "firebase/storage";
+
+import { useToast } from '@/composables/toast';
 
 export default {
     setup() {
-        const route = useRoute();
         const router = useRouter();
 
         const {
@@ -108,21 +89,17 @@ export default {
             toastMessage,
             toastAlertType,
             triggerToast
-        } = useToast(); // 변경 
+        } = useToast();
 
-        const moveToTodoListPage = () => { // to-do 리스트 페이지 이동
-            router.push({
-                name: 'TodosList'
-            });
-        }
-
-        const getId = route.params.id; // 유저 Id
         const loading = ref(true);
         const userObj = ref(null);
         const getUserObj = async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/users/${getId}`);
-                userObj.value = { ...res.data };
+                if (getAuth().currentUser !== null) {
+                  userObj.value = { ...getAuth().currentUser };
+                } else {
+                  triggerToast('오류로 인해 불러올 수 없습니다!', 'danger');
+                }
                 loading.value = false;
             } catch(err) {
                 err.value = '오류로 인해 불러올 수 없습니다!';
@@ -140,42 +117,67 @@ export default {
             }
         }
 
-        const onUpdate = async (e) => { // 유저 정보 업데이트
-            e.preventDefault();
+        const onUpdate = async () => {
             try {
-                const res = await axios.put(`http://localhost:3000/users/${getId}`, {
-                    userId: userObj.value.userId,
-                    userPassword: userObj.value.userPassword,
-                    userName: userObj.value.userName,
-                    userEmail: userObj.value.userEmail,
-                    userPhone: userObj.value.userPhone,
-                    nickName: userObj.value.nickName,
-                    userImage: userObj.value.userImage,
-                    userBio: userObj.value.userBio,
-                    userAbout: userObj.value.userAbout,
+                const storage = firebaseStorage.getStorage();
+                const storageRef = firebaseStorage.ref(storage, `userimages/${userObj.value.uid}`);
+                const imageFile = document.querySelector('#user-image').files[0];
+                let imageURL = null;
+
+                if(imageFile !== undefined) {
+                  firebaseStorage.uploadBytes(storageRef, imageFile)
+                  .then((snapshot) => {
+                    console.log("upload image: ", snapshot);
+                    firebaseStorage.getDownloadURL(storageRef)
+                      .then((url) => {
+                        console.log("image url ", url);
+                        imageURL = url;
+                      })
+                      .catch((error) => {
+                        error.value = '이미지를 업로드 할 수 없습니다!';
+                        triggerToast(error.value, 'danger');
+                      }
+                    );
+                  });
+                }
+                
+                updateProfile(getAuth().currentUser, {
+                  displayName: userObj.value.displayName,
+                  photoURL: imageURL === undefined ? userObj.value.photoURL : imageURL,
+                }).then(() => {
+                  triggerToast('성공적으로 변경 되었습니다.');
+                  isModifyMode.value = false;
+                  router.push({
+                      name: 'TodosList'
+                  });
+                }).catch((error) => {
+                  error.value = '오류로 인해 변경할 수 없습니다!';
+                  triggerToast(error.value, 'danger');
                 });
-                userObj.value = {...res.data};
-                triggerToast('성공적으로 변경 되었습니다.');
-                isModifyMode.value = false;
             } catch(err) {
                 err.value = '오류로 인해 변경할 수 없습니다!';
                 triggerToast(err.value, 'danger');
             }
         }
 
-        return {
-            loading,
+        const moveToTodoListPage = () => { 
+            router.push({
+                name: 'TodosList'
+            });
+        }
 
+        return {
+            showToast,
+            toastMessage,
+            toastAlertType,
+
+            loading,
             userObj,
             isModifyMode,
             modifyMode,
             onUpdate,
 
             moveToTodoListPage,
-
-            showToast,
-            toastMessage,
-            toastAlertType,
         }
     }
 }
@@ -184,26 +186,9 @@ export default {
 
 <style scoped>
 .profile-container {
-    margin-top: 30px;
+    margin-top: 20%;
     text-align: center !important;
     align-items: center !important;
-}
-.profile-bio {
-    margin-top: 10px; margin-bottom: 30px;
-    padding: 15px;
-    position: relative;
-	background: whitesmoke;
-	border-radius: .4em;
-}
-.profile-bio:after {
-	content: '';
-	position: absolute;
-	left: 50%; bottom: 0;
-	width: 0; height: 0;
-	border: 20px solid transparent;
-    border-bottom: 0; border-top-color: whitesmoke;
-	margin-left: -20px; margin-bottom: -20px;
-	
 }
 .user-image {
     display: block;

@@ -177,7 +177,6 @@ export default {
     const addTodo = async (todo) => {
       try {
         await addDoc(collection(db, "todos"), {
-          todoId: todo.todoId,
           userId: todo.userId,
           subject: todo.subject,
           uploadDate: todo.uploadDate,
