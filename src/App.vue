@@ -1,8 +1,15 @@
 <template>
-  <NavigationBar /><br />
+  <NavigationBar style="position: sticky; width: 100%; top: 0; z-index: 5;" /><br />
 
   <div class="container">
-    <router-view />
+    <div class="row">
+      <div class="mb-3 col-md-6 align-self-start left-content">
+        <CoinList  />
+      </div>
+      <div class="col-md-6 align-self-end right-content">
+        <router-view />
+      </div>
+    </div>
   </div>
 
   <Toast />
@@ -13,15 +20,13 @@
 <script>
 import NavigationBar from "@/components/header/NavigationBar.vue";
 import Toast from "@/components/toasts/ToastComponent.vue";
+import CoinList from '@/components/coins/CoinMarketPrice.vue';
 
 export default {
   components: {
     NavigationBar,
     Toast,
-  },
-
-  setup() {
-    return {};
+    CoinList,
   },
 };
 </script>
@@ -29,11 +34,16 @@ export default {
 
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap");
+@import "./assets/css/app.css";
 
-#app {
-  font-family: "Noto Sans KR", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.left-content {
+  overflow: auto;
+  max-height: 330px; 
+  padding-left: 0px; padding-right: 0px;
+}
+
+.right-content {
+  overflow: auto;
+  max-height: 500px;
 }
 </style>

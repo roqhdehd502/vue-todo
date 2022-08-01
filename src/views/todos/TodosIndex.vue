@@ -1,57 +1,31 @@
 <template>
   <div>
-    <div class="card">
-      <CoinList />
-    </div><br />
-
     <div v-if="isLogin">
-      <input
-        class="form-control"
-        type="text"
-        v-model="searchTodo"
-        placeholder="검색할 Todo 입력"
-        @keyup.enter="searchTodoKeyup"
-      /><br />
-
-      <div class="row"> 
+      <div class="row todo-form"> 
         <TodoForm @add-todo="addTodo" />
       </div>
 
-      <div v-if="!todos.length">
+      <div 
+        v-show="!loading"
+        class="mb-3 bg-light text-success spinner-border" 
+        role="status"
+        style="margin-left: 45%"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+
+      <div v-show="loading && !todos.length" class="card p-3 bg-secondary text-center" style="color: white;">
         추가된 할 일이 없습니다.
       </div>
 
       <ToDoList 
+        v-show="loading"
         :todos="todos" 
         @toggle-todo="toggleTodo" 
         @delete-todo="deleteTodo" 
-      /><br />
-
-      <!-- <nav>
-        <ul class="pagination justify-content-center">
-          <li v-if="currentPage !== 1" class="page-item">
-            <a class="page-link page-cursor" @click="getTodos(currentPage - 1)">
-              Prev
-            </a>
-          </li>
-          <li 
-            v-for="page in numberOfPages" 
-            :key="page"
-            class="page-item"
-            :class="currentPage === page ? 'active' : ''"
-          >
-            <a class="page-link page-cursor" @click="getTodos(page)">
-              {{ page }}
-            </a>
-          </li>
-          <li v-if="numberOfPages !== currentPage" class="page-item">
-            <a class="page-link page-cursor" @click="getTodos(currentPage + 1)">
-              Next
-            </a>
-          </li>
-        </ul>
-      </nav> -->
+      />
     </div>
+
     <div v-else class="input-group mb-3">
       <input 
         class="form-control" 
@@ -74,15 +48,13 @@
 
 <script>
 import { 
-  ref
-  , watch
-  //, onMounted
+  ref,
 } from 'vue';
 import router from '@/router';
 
 import { 
-  getAuth
-  , onAuthStateChanged
+  getAuth,
+  onAuthStateChanged
 } from "firebase/auth";
 import { 
   collection,
@@ -91,22 +63,19 @@ import {
   query,
   where,
   orderBy,
-  //getDocs,
   addDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
-import CoinList from '@/components/coins/CoinMarketPrice.vue'; // 코인 시세 리스트 컴포넌트
-import ToDoList from '@/components/Main/todos/TodoList.vue'; // Todo 목록 컴포넌트
-import TodoForm from '@/components/Main/todos/TodoForm.vue'; // Todo form 컴포넌트
+import ToDoList from '@/components/Main/todos/TodoList.vue';
+import TodoForm from '@/components/Main/todos/TodoForm.vue';
 
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+import { useToast } from '@/composables/toast';
 
 
 export default {
   components: {
-    CoinList,
     ToDoList, 
     TodoForm,
   },
@@ -119,10 +88,9 @@ export default {
       triggerToast,
     } = useToast();
 
-    let timeout = null;
+    const loading = ref(false); 
     const isLogin = ref(false);
     const userObj = ref(null);
-    const searchTodo = ref('');
     const todos = ref([]);
 
     const loginStatus = () => {
@@ -140,26 +108,15 @@ export default {
     }
     loginStatus();
     
-    const searchTodoKeyup = () => {
-      clearTimeout(timeout);
-      //getTodos(1);
-    };
-
-    watch(searchTodo, () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        //getTodos(1);
-      }, 100);
-    });    
-    
     const getTodos = async (uid) => {
       try {
-        const q = query(
+        let q = query(
           collection(db, "todos")
           , where("userId", "==", uid)
           , where("enabled", "==", true)
           , orderBy("uploadDate", "desc")
         );
+
         onSnapshot(q, (querySnapshot) => {
           todos.value = [];
           querySnapshot.forEach((doc) => {
@@ -168,8 +125,11 @@ export default {
             todos.value.push(data);
           })
         });
+
+        loading.value = true;
       } catch(err) {
         err.value = '오류로 인해 불러올 수 없습니다!';
+        console.log(err);
         triggerToast(err.value, 'danger');
       }
     };
@@ -231,37 +191,25 @@ export default {
       isLogin,
       moveToLogin,
 
+      loading,
       userObj,
       todos,
       getTodos,
       addTodo,
       deleteTodo,
       toggleTodo,
-      searchTodo,
-      searchTodoKeyup,
     };
   }
 }
 </script>
 
 
+
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-} 
-
-.page-cursor {
-  cursor: pointer;
+.todo-form {
+  top: 0;
+  position: sticky;
+  z-index: 5;
+  /* background-color: white; */
 }
 </style>

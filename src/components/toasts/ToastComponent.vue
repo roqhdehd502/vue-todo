@@ -33,6 +33,7 @@ export default {
   position: fixed !important;
   top: 10px;
   right: 10px;
+  z-index: 50;
 }
 
 .fade-enter-active,

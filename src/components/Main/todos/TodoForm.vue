@@ -5,7 +5,7 @@
         class="form-control"
         type="text" 
         v-model="todo"
-        placeholder="추가할 Todo 입력"
+        placeholder="추가할 할 일 입력"
         maxlength="30"
       />
       <button @click="addTodo" class="btn btn-success" type="button">
@@ -25,7 +25,7 @@ import {
   , onAuthStateChanged
 } from "firebase/auth";
 
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+import { useToast } from '@/composables/toast';
 
 export default { 
   emits: [
@@ -33,6 +33,13 @@ export default {
   ],
 
   setup(props, { emit }) {
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast,
+    } = useToast();
+
     const userId = ref(null);
     const getUserId = () => {
       onAuthStateChanged(getAuth(), (user) => {
@@ -46,10 +53,10 @@ export default {
     }
     getUserId();
 
-    const todo = ref(''); // to-do 내용
-    const addTodo = () => { // to-do list 등록
+    const todo = ref('');
+    const addTodo = () => {
       if (todo.value === '' || todo.value === null) {
-        triggerToast('Todo 내용을 입력해주세요!', 'danger');
+        triggerToast('내용을 입력해주세요!', 'danger');
       } else {
         emit('add-todo', {
             userId: userId.value,
@@ -62,20 +69,15 @@ export default {
       }
     }
 
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast,
-    } = useToast(); // 변경 사항시 알림
+    
 
     return {
-      todo,
-      addTodo,
-
       showToast,
       toastMessage,
       toastAlertType,
+
+      todo,
+      addTodo,
     };
   }
 }
