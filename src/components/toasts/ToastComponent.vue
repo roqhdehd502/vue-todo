@@ -13,15 +13,19 @@
 </template>
 
 
+
 <script>
-import { useToast } from '@/composables/toast';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 
 export default {
   name: 'ToastComponent',
 
   setup() {
-    const { toasts } = useToast();
+    const store = useStore();
+
+    const toasts = computed(() => store.state.toast.toasts);
 
     return {
       toasts,
@@ -29,6 +33,7 @@ export default {
   }
 }
 </script>
+
 
 
 <style scoped>

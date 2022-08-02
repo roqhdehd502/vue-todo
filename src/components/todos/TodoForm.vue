@@ -19,13 +19,13 @@
 
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 
 import { 
   getAuth
   , onAuthStateChanged
 } from "firebase/auth";
 
-import { useToast } from '@/composables/toast';
 
 export default { 
   name: 'TodoForm',
@@ -35,12 +35,7 @@ export default {
   ],
 
   setup(props, { emit }) {
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast,
-    } = useToast();
+    const store = useStore();
 
     const userId = ref(null);
     const getUserId = () => {
@@ -58,7 +53,10 @@ export default {
     const todo = ref('');
     const addTodo = () => {
       if (todo.value === '' || todo.value === null) {
-        triggerToast('내용을 입력해주세요!', 'danger');
+        store.dispatch('toast/triggerToast', { 
+            message: '내용을 입력해주세요!', 
+            type: 'warning' 
+        });
       } else {
         emit('add-todo', {
             userId: userId.value,
@@ -71,22 +69,11 @@ export default {
       }
     }
 
-    
 
     return {
-      showToast,
-      toastMessage,
-      toastAlertType,
-
       todo,
       addTodo,
     };
   }
 }
 </script>
-
-
-
-<style scoped>
-
-</style>

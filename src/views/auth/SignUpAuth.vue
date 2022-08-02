@@ -51,6 +51,7 @@
 
 <script> 
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 import router from '@/router';
 
 import { 
@@ -58,32 +59,33 @@ import {
   , createUserWithEmailAndPassword
 } from "firebase/auth";
 
-import { useToast } from '@/composables/toast';
 
 export default { 
     name: 'SignUpAuth',
+
     setup() {
+        const store = useStore();
+
         const userEmail = ref('');
         const userPassword = ref('');
-
-        const {
-            showToast,
-            toastMessage,
-            toastAlertType,
-            triggerToast,
-        } = useToast();
         
         const signInSubmit = () => {
             createUserWithEmailAndPassword(getAuth(), userEmail.value, userPassword.value)
             .then((userCredential) => {
-              console.log("userCredential user: ", userCredential.user)
-              triggerToast('성공적으로 저장되었습니다.', 'success');
+              console.log(userCredential.user);
+              store.dispatch('toast/triggerToast', { 
+                  message: '성공적으로 저장되었습니다.', 
+                  type: 'success' 
+              }); 
               router.replace("/")
               return;
             })
             .catch((error) => {
               console.log(error.message);
-              triggerToast('올바르지 않은 정보입니다!', 'danger');
+              store.dispatch('toast/triggerToast', { 
+                  message: '등록할 계정정보를 다시 입력해주세요!', 
+                  type: 'warning' 
+              }); 
               return;
             });  
         };
@@ -91,11 +93,8 @@ export default {
         return {
             userEmail,
             userPassword,
+            
             signInSubmit,
-
-            showToast,
-            toastMessage,
-            toastAlertType,
         }
     }
 }; 

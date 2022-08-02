@@ -15,7 +15,7 @@ export default {
     },
 
     actions: {
-        triggerToast({ commit }, payload) { // Toast 기능
+        triggerToast({ commit }, payload) {
             commit('ADD_TOAST', {
                 id: Date.now(),
                 message: payload.message,
@@ -26,10 +26,4 @@ export default {
             }, 3000);
         }
     },
-
-    getters: {
-        // toastMessageWithSmile (state) {
-        //     return state.toastMessage + ' :)';
-        // }
-    }
 }

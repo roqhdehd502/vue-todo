@@ -53,29 +53,24 @@
 
 <script>
 import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import _ from 'lodash';
 
 import { db } from "../../firebaseConfig";
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+
 
 export default {
-  name: 'todos _id',
+  name: 'todos_id',
   
   setup() {
+    const store = useStore();
     const route = useRoute();
     const router = useRouter();
-
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast
-    } = useToast(); // 변경 사항시 알림
     
-    const docId = route.params.id; // to-do 정보 불러오기
+    const docId = route.params.id;
     const loading = ref(true);
     const todo = ref(null);
     const originTodo = ref(null);
@@ -88,12 +83,18 @@ export default {
           todo.value = { ...docSnap.data() };
           originTodo.value = { ...docSnap.data() };
         } else {
-          triggerToast('내용을 불러올 수 없습니다!', 'danger');
+          store.dispatch('toast/triggerToast', { 
+              message: '내용을 불러올 수 없습니다!', 
+              type: 'danger' 
+          }); 
         }
         loading.value = false;
       } catch(err) {
         err.value = '내용을 불러올 수 없습니다!';
-        triggerToast(err.value, 'danger');
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'danger' 
+        });
       }
     };
     getTodo();
@@ -101,12 +102,16 @@ export default {
     const isTodoUpdated = computed(() => {
       return !_.isEqual(todo.value, originTodo.value);
     });
+
     const toggleTodoStatus = () => { 
       try {
         todo.value.isCompleted = !todo.value.isCompleted;
       } catch(err) {
         err.value = '오류로 인해 변경할 수 없습니다!';
-        triggerToast(err.value, 'danger');
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'warning' 
+        });
       }
     }
 
@@ -119,14 +124,19 @@ export default {
           isCompleted: todo.value.isCompleted,
           enabled: originTodo.value.enabled,
         });
-        //originTodo.value = {...res.data};
-        triggerToast('성공적으로 변경 되었습니다.');
+        store.dispatch('toast/triggerToast', { 
+            message: '성공적으로 변경 되었습니다.', 
+            type: 'success' 
+        });
         router.push({
           name: 'TodosList'
         });
       } catch(err) {
         err.value = '오류로 인해 변경할 수 없습니다!';
-        triggerToast(err.value, 'danger');
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'warning' 
+        });
       }
     }
 
@@ -138,19 +148,13 @@ export default {
 
     return {
       loading,
-
       todo,
       originTodo,
-
+      
+      isTodoUpdated,
       toggleTodoStatus,
       onUpdate,
-      isTodoUpdated,
-
       moveToTodoListPage,
-
-      showToast,
-      toastMessage,
-      toastAlertType,
     }
   }
 }

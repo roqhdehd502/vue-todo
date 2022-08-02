@@ -29,7 +29,7 @@
 
 
 <script>
-import Modal from '../../modals/ModalComponent.vue'; // 모달 컴포넌트
+import Modal from '../modals/ModalComponent.vue';
 
 export default {
   name: 'TodoDetail',
@@ -44,11 +44,11 @@ export default {
   ],
 
   setup(props, { emit }) {
-    const onClose = () => { // 모달창 닫기
+    const onClose = () => {
       emit('close');
     }
 
-    const onDelete = () => { // todo 삭제
+    const onDelete = () => {
       emit('delete');
     }
 

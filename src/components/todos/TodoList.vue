@@ -55,7 +55,7 @@ import { ref } from 'vue';
 
 import router from '@/router';
 
-import TodoDetail from '@/components/Main/todos/TodoDetail.vue'; // Todo 상세 컴포넌트
+import TodoDetail from '@/components/todos/TodoDetail.vue'; // Todo 상세 컴포넌트
 
 export default {
   name: 'TodoList',

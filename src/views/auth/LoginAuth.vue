@@ -54,6 +54,7 @@
 
 <script> 
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 import router from '@/router';
 
 import { 
@@ -62,21 +63,15 @@ import {
   , onAuthStateChanged 
 } from "firebase/auth";
 
-import { useToast } from '@/composables/toast';
 
 export default { 
     name: 'LoginAuth',
     
     setup() {
+        const store = useStore();
+
         const userEmail = ref('');
         const userPassword = ref('');
-
-        const {
-            showToast,
-            toastMessage,
-            toastAlertType,
-            triggerToast,
-        } = useToast();
 
         const isLogin = () => {
           onAuthStateChanged(getAuth(), (user) => {
@@ -100,7 +95,10 @@ export default {
               })
               .catch((error) => {
                 console.log(error.message);
-                triggerToast('올바르지 않은 계정입니다!', 'danger');
+                store.dispatch('toast/triggerToast', { 
+                    message: '올바르지 않은 계정입니다!', 
+                    type: 'warning' 
+                }); 
                 return;
               });    
         };
@@ -108,11 +106,8 @@ export default {
         return {
             userEmail,
             userPassword,
+            
             loginSubmit,
-
-            showToast,
-            toastMessage,
-            toastAlertType,
         }
     }
 }; 

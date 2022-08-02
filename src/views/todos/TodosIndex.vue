@@ -46,10 +46,10 @@
 </template>
 
 
+
 <script>
-import { 
-  ref,
-} from 'vue';
+import { ref } from 'vue';
+import { useStore } from 'vuex';
 import router from '@/router';
 
 import { 
@@ -68,10 +68,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
-import ToDoList from '@/components/Main/todos/TodoList.vue';
-import TodoForm from '@/components/Main/todos/TodoForm.vue';
-
-import { useToast } from '@/composables/toast';
+import ToDoList from '@/components/todos/TodoList.vue';
+import TodoForm from '@/components/todos/TodoForm.vue';
 
 
 export default {
@@ -83,12 +81,7 @@ export default {
   },
 
   setup() {
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast,
-    } = useToast();
+    const store = useStore();
 
     const loading = ref(false); 
     const isLogin = ref(false);
@@ -130,9 +123,11 @@ export default {
 
         loading.value = true;
       } catch(err) {
-        err.value = '오류로 인해 불러올 수 없습니다!';
-        console.log(err);
-        triggerToast(err.value, 'danger');
+        err.value = '내용을 불러올 수 없습니다!';
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'danger' 
+        });
       }
     };
 
@@ -146,8 +141,11 @@ export default {
           enabled: todo.enabled,
         });
       } catch(err) {
-        err.value = '오류로 인해 추가할 수 없습니다!';
-        triggerToast(err.value, 'danger');
+        err.value = '오류로 인해 변경할 수 없습니다!';
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'warning' 
+        });
       }
     };
 
@@ -158,11 +156,16 @@ export default {
         await updateDoc(docRef, {
           isCompleted: isChecked
         });
-        triggerToast('성공적으로 변경 되었습니다.');
+        store.dispatch('toast/triggerToast', { 
+            message: '성공적으로 변경 되었습니다.', 
+            type: 'success' 
+        });
       } catch(err) {
-        console.log(err.message);
-        err.value = '오류로 인해 변경할 수 없습니다!'
-        triggerToast(err.value, 'danger');
+        err.value = '오류로 인해 변경할 수 없습니다!';
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'warning' 
+        });
       }
     };
 
@@ -172,10 +175,16 @@ export default {
         await updateDoc(docRef, {
           enabled: false
         });
-        triggerToast('성공적으로 삭제 되었습니다.');
+        store.dispatch('toast/triggerToast', { 
+            message: '성공적으로 삭제 되었습니다.', 
+            type: 'success' 
+        });
       } catch(err) {
-        err.value = '오류로 인해 삭제할 수 없습니다!'
-        triggerToast(err.value, 'danger');
+        err.value = '오류로 인해 삭제할 수 없습니다!';
+        store.dispatch('toast/triggerToast', { 
+            message: err.value, 
+            type: 'warning' 
+        });
       }
     };
 
@@ -186,10 +195,6 @@ export default {
     }
 
     return {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      
       loading,
       isLogin,
       userObj,

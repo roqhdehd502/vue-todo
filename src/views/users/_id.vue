@@ -65,8 +65,10 @@
 </template>
 
 
+
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 
 import {
   useRouter 
@@ -78,41 +80,41 @@ import {
 } from "firebase/auth";
 import * as firebaseStorage from "firebase/storage";
 
-import { useToast } from '@/composables/toast';
 
 export default {
     name: 'users_id',
     
     setup() {
+        const store = useStore();
         const router = useRouter();
-
-        const {
-            showToast,
-            toastMessage,
-            toastAlertType,
-            triggerToast
-        } = useToast();
 
         const loading = ref(true);
         const userObj = ref(null);
+        const isModifyMode = ref(false);
+
         const getUserObj = async () => {
             try {
                 if (getAuth().currentUser !== null) {
                   userObj.value = { ...getAuth().currentUser };
                 } else {
-                  triggerToast('오류로 인해 불러올 수 없습니다!', 'danger');
+                  store.dispatch('toast/triggerToast', { 
+                      message: '내용을 불러올 수 없습니다!', 
+                      type: 'danger' 
+                  });
                 }
                 loading.value = false;
             } catch(err) {
-                err.value = '오류로 인해 불러올 수 없습니다!';
-                triggerToast(err.value, 'danger');
+                err.value = '내용을 불러올 수 없습니다!';
+                store.dispatch('toast/triggerToast', { 
+                    message: err.value, 
+                    type: 'danger' 
+                });
             }
         }
         getUserObj();
-
-        const isModifyMode = ref(false);
+        
         const modifyMode = () => {
-            if(isModifyMode.value === false) {
+            if (isModifyMode.value === false) {
                 isModifyMode.value = true;
             } else {
                 isModifyMode.value = false;
@@ -126,18 +128,20 @@ export default {
                 const imageFile = document.querySelector('#user-image').files[0];
                 let imageURL = null;
 
-                if(imageFile !== undefined) {
+                if (imageFile !== undefined) {
                   firebaseStorage.uploadBytes(storageRef, imageFile)
                   .then((snapshot) => {
                     console.log("upload image: ", snapshot);
                     firebaseStorage.getDownloadURL(storageRef)
                       .then((url) => {
-                        console.log("image url ", url);
                         imageURL = url;
                       })
-                      .catch((error) => {
-                        error.value = '이미지를 업로드 할 수 없습니다!';
-                        triggerToast(error.value, 'danger');
+                      .catch((err) => {
+                        err.value = '오류로 인해 이미지를 업로드 할 수 없습니다!';
+                        store.dispatch('toast/triggerToast', { 
+                            message: err.value, 
+                            type: 'warning' 
+                        });
                       }
                     );
                   });
@@ -147,18 +151,27 @@ export default {
                   displayName: userObj.value.displayName,
                   photoURL: imageURL === undefined ? userObj.value.photoURL : imageURL,
                 }).then(() => {
-                  triggerToast('성공적으로 변경 되었습니다.');
+                  store.dispatch('toast/triggerToast', { 
+                      message: '성공적으로 변경 되었습니다.', 
+                      type: 'success' 
+                  });
                   isModifyMode.value = false;
                   router.push({
                       name: 'TodosList'
                   });
-                }).catch((error) => {
-                  error.value = '오류로 인해 변경할 수 없습니다!';
-                  triggerToast(error.value, 'danger');
+                }).catch((err) => {
+                  err.value = '오류로 인해 변경할 수 없습니다!';
+                  store.dispatch('toast/triggerToast', { 
+                      message: err.value, 
+                      type: 'warning' 
+                  });
                 });
             } catch(err) {
                 err.value = '오류로 인해 변경할 수 없습니다!';
-                triggerToast(err.value, 'danger');
+                store.dispatch('toast/triggerToast', { 
+                    message: err.value, 
+                    type: 'warning' 
+                });
             }
         }
 
@@ -169,21 +182,18 @@ export default {
         }
 
         return {
-            showToast,
-            toastMessage,
-            toastAlertType,
-
             loading,
             userObj,
             isModifyMode,
+            
             modifyMode,
             onUpdate,
-
             moveToTodoListPage,
         }
     }
 }
 </script>
+
 
 
 <style scoped>
@@ -192,12 +202,14 @@ export default {
     text-align: center !important;
     align-items: center !important;
 }
+
 .user-image {
     display: block;
     margin: 0px auto;
     width: 200px; height: 200px;
     border-radius: 100px;
 }
+
 .profile-aboutme {
     margin-top: 30px;
     margin-bottom: 30px;
@@ -205,9 +217,11 @@ export default {
     background-color: whitesmoke;
     border-radius: 10px;
 }
+
 .profile-aboutme-title {
     margin-bottom: 20px;
 }
+
 .modify-mode-style {
     justify-content: center;
     align-items: center;

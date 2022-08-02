@@ -56,24 +56,19 @@
 </template>
 
 
+
 <script>
 import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 
 import axios from 'axios';
-
-import { useToast } from '@/composables/toast';
 
 
 export default {
   name: 'CoinMarketPrice',
   
   setup() {
-    const {
-      showToast,
-      toastMessage,
-      toastAlertType,
-      triggerToast,
-    } = useToast();
+    const store = useStore();
 
     const loading = ref(false);
     const autoReloadSeconds = 30; 
@@ -86,7 +81,10 @@ export default {
         coins.value = res.data.slice(0, coinTypeLength.value);
         loading.value = true;
       } catch(err) {
-        triggerToast('코인정보를 불러올 수 없습니다!', 'danger');
+        store.dispatch('toast/triggerToast', { 
+            message: '코인정보를 불러올 수 없습니다!', 
+            type: 'danger' 
+        });
       }
     });
 
@@ -114,10 +112,6 @@ export default {
     }, autoReloadSeconds * 1000);
 
     return {
-      showToast,
-      toastMessage,
-      toastAlertType,  
-      
       loading,
       coins,
       coinTypeLength,
@@ -130,6 +124,7 @@ export default {
   },
 }
 </script>
+
 
 
 <style scoped>
