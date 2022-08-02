@@ -2,7 +2,7 @@
     <div 
       v-for="(todo, index) in todos" 
       :key="todo.docId ? todo.docId : index" 
-      class="card mt-2"
+      class="card mt-1 mb-1"
     >
       <div 
         class="card-body p-2 d-flex align-items-center todo-cursor"
@@ -48,6 +48,7 @@
       />
     </teleport>
 </template>
+
 
 
 <script>
@@ -111,6 +112,7 @@ export default {
 
     return {
       showModal,
+
       openModal,
       closeModal,
       deleteTodo,
@@ -120,6 +122,7 @@ export default {
   }
 }
 </script>
+
 
 
 <style scoped>

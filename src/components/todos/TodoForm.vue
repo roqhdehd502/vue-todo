@@ -2,6 +2,7 @@
   <div class="d-flex">
     <div class="input-group mb-3">
       <input 
+        @keyup.enter="addTodo" 
         class="form-control"
         type="text" 
         v-model="todo"
@@ -25,6 +26,8 @@ import {
   getAuth
   , onAuthStateChanged
 } from "firebase/auth";
+
+import { todoMessages } from '@/common/messages';
 
 
 export default { 
@@ -53,10 +56,7 @@ export default {
     const todo = ref('');
     const addTodo = () => {
       if (todo.value === '' || todo.value === null) {
-        store.dispatch('toast/triggerToast', { 
-            message: '내용을 입력해주세요!', 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.INVALID_TODO_INFO);
       } else {
         emit('add-todo', {
             userId: userId.value,

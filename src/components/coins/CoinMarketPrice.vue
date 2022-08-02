@@ -61,7 +61,8 @@
 import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
-import axios from 'axios';
+import { coinMessages } from '@/common/messages';
+import { getCoinpaprikaAPI } from '@/remote/coinpaprikaAPI';
 
 
 export default {
@@ -75,16 +76,13 @@ export default {
     const coins = ref([]);
     const coinTypeLength = ref(5);
 
-    const getCoins = onMounted(async () => { // Load Coinpaprika API
+    const getCoins = onMounted(async () => {
       try {
-        const res = await axios.get('https://api.coinpaprika.com/v1/tickers?quotes=KRW');
+        const res = await getCoinpaprikaAPI();
         coins.value = res.data.slice(0, coinTypeLength.value);
         loading.value = true;
-      } catch(err) {
-        store.dispatch('toast/triggerToast', { 
-            message: '코인정보를 불러올 수 없습니다!', 
-            type: 'danger' 
-        });
+      } catch (error) {
+        store.dispatch('toast/triggerToast', coinMessages.FAILED_COINS_INFO);
       }
     });
 

@@ -59,6 +59,8 @@ import {
   , createUserWithEmailAndPassword
 } from "firebase/auth";
 
+import { authMessages } from '@/common/messages';
+
 
 export default { 
     name: 'SignUpAuth',
@@ -73,19 +75,13 @@ export default {
             createUserWithEmailAndPassword(getAuth(), userEmail.value, userPassword.value)
             .then((userCredential) => {
               console.log(userCredential.user);
-              store.dispatch('toast/triggerToast', { 
-                  message: '성공적으로 저장되었습니다.', 
-                  type: 'success' 
-              }); 
+              store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
               router.replace("/")
               return;
             })
             .catch((error) => {
               console.log(error.message);
-              store.dispatch('toast/triggerToast', { 
-                  message: '등록할 계정정보를 다시 입력해주세요!', 
-                  type: 'warning' 
-              }); 
+              store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
               return;
             });  
         };

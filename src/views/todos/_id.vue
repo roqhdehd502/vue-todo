@@ -57,9 +57,10 @@ import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 import _ from 'lodash';
 
-import { db } from "../../firebaseConfig";
+import { todoMessages } from '@/common/messages';
 
 
 export default {
@@ -83,18 +84,11 @@ export default {
           todo.value = { ...docSnap.data() };
           originTodo.value = { ...docSnap.data() };
         } else {
-          store.dispatch('toast/triggerToast', { 
-              message: '내용을 불러올 수 없습니다!', 
-              type: 'danger' 
-          }); 
+          store.dispatch('toast/triggerToast', todoMessages.FAILED_TODO_INFO);
         }
         loading.value = false;
       } catch(err) {
-        err.value = '내용을 불러올 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'danger' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_TODO_INFO);
       }
     };
     getTodo();
@@ -107,36 +101,33 @@ export default {
       try {
         todo.value.isCompleted = !todo.value.isCompleted;
       } catch(err) {
-        err.value = '오류로 인해 변경할 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_UPDATE_TODO_INFO);
       }
     }
 
     const onUpdate = async () => {
       try {
-        const docRef = doc(db, "todos", docId);
-        await updateDoc(docRef, {
-          userId: originTodo.value.userId,
-          subject: todo.value.subject,
-          isCompleted: todo.value.isCompleted,
-          enabled: originTodo.value.enabled,
-        });
-        store.dispatch('toast/triggerToast', { 
-            message: '성공적으로 변경 되었습니다.', 
-            type: 'success' 
-        });
-        router.push({
-          name: 'TodosList'
-        });
+        if (
+          todo.value.subject === "" ||
+          todo.value.subject === null
+        ) {
+          store.dispatch('toast/triggerToast', todoMessages.INVALID_UPDATE_TODO_INFO);
+          return;
+        } else {
+          const docRef = doc(db, "todos", docId);
+          await updateDoc(docRef, {
+            userId: originTodo.value.userId,
+            subject: todo.value.subject,
+            isCompleted: todo.value.isCompleted,
+            enabled: originTodo.value.enabled,
+          });
+          store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
+          router.push({
+            name: 'TodosList'
+          });
+        }
       } catch(err) {
-        err.value = '오류로 인해 변경할 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_UPDATE_TODO_INFO);
       }
     }
 
@@ -166,6 +157,6 @@ export default {
 .form-style {
   justify-content: center;
   align-items: center;
-  padding-top: 20vh;
+  padding-top: 3vh;
 }
 </style>

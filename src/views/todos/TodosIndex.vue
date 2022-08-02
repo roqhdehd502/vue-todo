@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="isLogin">
-      <div class="row todo-form"> 
+      <div class="row todo-form-sticky"> 
         <TodoForm @add-todo="addTodo" />
       </div>
 
@@ -18,12 +18,14 @@
         추가된 할 일이 없습니다.
       </div>
 
-      <ToDoList 
-        v-if="loading"
-        :todos="todos" 
-        @toggle-todo="toggleTodo" 
-        @delete-todo="deleteTodo" 
-      />
+      <div class="todo-list-overflow">
+        <ToDoList 
+          v-if="loading"
+          :todos="todos" 
+          @toggle-todo="toggleTodo" 
+          @delete-todo="deleteTodo"
+        />
+      </div>
     </div>
 
     <div v-else class="input-group mb-3">
@@ -66,7 +68,9 @@ import {
   addDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { db } from "@/firebaseConfig";
+
+import { todoMessages } from '@/common/messages';
 
 import ToDoList from '@/components/todos/TodoList.vue';
 import TodoForm from '@/components/todos/TodoForm.vue';
@@ -123,11 +127,7 @@ export default {
 
         loading.value = true;
       } catch(err) {
-        err.value = '내용을 불러올 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'danger' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_TODOS_INFO);
       }
     };
 
@@ -141,11 +141,7 @@ export default {
           enabled: todo.enabled,
         });
       } catch(err) {
-        err.value = '오류로 인해 변경할 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_CREATE_TODO_INFO);
       }
     };
 
@@ -156,16 +152,9 @@ export default {
         await updateDoc(docRef, {
           isCompleted: isChecked
         });
-        store.dispatch('toast/triggerToast', { 
-            message: '성공적으로 변경 되었습니다.', 
-            type: 'success' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
       } catch(err) {
-        err.value = '오류로 인해 변경할 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_UPDATE_TODO_INFO);
       }
     };
 
@@ -175,16 +164,9 @@ export default {
         await updateDoc(docRef, {
           enabled: false
         });
-        store.dispatch('toast/triggerToast', { 
-            message: '성공적으로 삭제 되었습니다.', 
-            type: 'success' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.SUCCESS_DELETE_TODO_INFO);
       } catch(err) {
-        err.value = '오류로 인해 삭제할 수 없습니다!';
-        store.dispatch('toast/triggerToast', { 
-            message: err.value, 
-            type: 'warning' 
-        });
+        store.dispatch('toast/triggerToast', todoMessages.FAILED_DELETE_TODO_INFO);
       }
     };
 
@@ -213,9 +195,15 @@ export default {
 
 
 <style scoped>
-.todo-form {
+.todo-form-sticky {
   top: 0;
   position: sticky;
   z-index: 5;
+}
+
+.todo-list-overflow {
+  border-top: 1px solid #dcdcdc; border-bottom: 1px solid #dcdcdc;
+  overflow: auto;
+  height: 230px;
 }
 </style>

@@ -69,16 +69,15 @@
 <script>
 import { ref } from 'vue';
 import { useStore } from 'vuex';
-
-import {
-  useRouter 
-} from 'vue-router';
+import { useRouter } from 'vue-router';
 
 import { 
   getAuth, 
   updateProfile 
 } from "firebase/auth";
 import * as firebaseStorage from "firebase/storage";
+
+import { authMessages } from '@/common/messages';
 
 
 export default {
@@ -97,18 +96,11 @@ export default {
                 if (getAuth().currentUser !== null) {
                   userObj.value = { ...getAuth().currentUser };
                 } else {
-                  store.dispatch('toast/triggerToast', { 
-                      message: '내용을 불러올 수 없습니다!', 
-                      type: 'danger' 
-                  });
+                  store.dispatch('toast/triggerToast', authMessages.FAILED_USER_INFO);
                 }
                 loading.value = false;
             } catch(err) {
-                err.value = '내용을 불러올 수 없습니다!';
-                store.dispatch('toast/triggerToast', { 
-                    message: err.value, 
-                    type: 'danger' 
-                });
+                store.dispatch('toast/triggerToast', authMessages.FAILED_USER_INFO);
             }
         }
         getUserObj();
@@ -137,11 +129,8 @@ export default {
                         imageURL = url;
                       })
                       .catch((err) => {
-                        err.value = '오류로 인해 이미지를 업로드 할 수 없습니다!';
-                        store.dispatch('toast/triggerToast', { 
-                            message: err.value, 
-                            type: 'warning' 
-                        });
+                        console.log(err);
+                        store.dispatch('toast/triggerToast', authMessages.INVALID_UPLOAD_USER_IMAGE_INFO);
                       }
                     );
                   });
@@ -151,27 +140,17 @@ export default {
                   displayName: userObj.value.displayName,
                   photoURL: imageURL === undefined ? userObj.value.photoURL : imageURL,
                 }).then(() => {
-                  store.dispatch('toast/triggerToast', { 
-                      message: '성공적으로 변경 되었습니다.', 
-                      type: 'success' 
-                  });
+                  store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
                   isModifyMode.value = false;
                   router.push({
                       name: 'TodosList'
                   });
                 }).catch((err) => {
-                  err.value = '오류로 인해 변경할 수 없습니다!';
-                  store.dispatch('toast/triggerToast', { 
-                      message: err.value, 
-                      type: 'warning' 
-                  });
+                  console.log(err);
+                  store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
                 });
             } catch(err) {
-                err.value = '오류로 인해 변경할 수 없습니다!';
-                store.dispatch('toast/triggerToast', { 
-                    message: err.value, 
-                    type: 'warning' 
-                });
+                store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
             }
         }
 

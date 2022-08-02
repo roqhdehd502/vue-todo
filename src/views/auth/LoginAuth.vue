@@ -63,6 +63,8 @@ import {
   , onAuthStateChanged 
 } from "firebase/auth";
 
+import { authMessages } from '@/common/messages';
+
 
 export default { 
     name: 'LoginAuth',
@@ -76,7 +78,7 @@ export default {
         const isLogin = () => {
           onAuthStateChanged(getAuth(), (user) => {
             if (user) {
-              console.log("Already Login!")
+              store.dispatch('toast/triggerToast', authMessages.INVALID_ACCESS);
               router.replace('/');
               return;
             } else {
@@ -95,10 +97,7 @@ export default {
               })
               .catch((error) => {
                 console.log(error.message);
-                store.dispatch('toast/triggerToast', { 
-                    message: '올바르지 않은 계정입니다!', 
-                    type: 'warning' 
-                }); 
+                store.dispatch('toast/triggerToast', authMessages.INVALID_USER_INFO);
                 return;
               });    
         };
