@@ -4,7 +4,7 @@ import store from './store';
 import router from './router';
 
 // firebase
-import { db } from './firebase';
+import { db } from './firebaseConfig';
 
 // bootstrap 5.0
 import 'bootstrap/dist/js/bootstrap.bundle';

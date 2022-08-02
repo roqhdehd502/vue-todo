@@ -6,7 +6,7 @@
       </div>
 
       <div 
-        v-show="!loading"
+        v-if="!loading"
         class="mb-3 bg-light text-success spinner-border" 
         role="status"
         style="margin-left: 45%"
@@ -14,12 +14,12 @@
         <span class="visually-hidden">Loading...</span>
       </div>
 
-      <div v-show="loading && !todos.length" class="card p-3 bg-secondary text-center" style="color: white;">
+      <div v-if="loading && !todos.length" class="card p-3 bg-secondary text-center" style="color: white;">
         추가된 할 일이 없습니다.
       </div>
 
       <ToDoList 
-        v-show="loading"
+        v-if="loading"
         :todos="todos" 
         @toggle-todo="toggleTodo" 
         @delete-todo="deleteTodo" 
@@ -66,7 +66,7 @@ import {
   addDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db } from "../../firebaseConfig";
 
 import ToDoList from '@/components/Main/todos/TodoList.vue';
 import TodoForm from '@/components/Main/todos/TodoForm.vue';
@@ -189,17 +189,17 @@ export default {
       showToast,
       toastMessage,
       toastAlertType,
-
-      isLogin,
-      moveToLogin,
-
+      
       loading,
+      isLogin,
       userObj,
       todos,
+     
       getTodos,
       addTodo,
-      deleteTodo,
       toggleTodo,
+      deleteTodo,
+      moveToLogin,
     };
   }
 }
@@ -212,6 +212,5 @@ export default {
   top: 0;
   position: sticky;
   z-index: 5;
-  /* background-color: white; */
 }
 </style>

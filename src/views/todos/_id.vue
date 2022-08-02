@@ -58,7 +58,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import _ from 'lodash';
 
-import { db } from "../../firebase";
+import { db } from "../../firebaseConfig";
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {

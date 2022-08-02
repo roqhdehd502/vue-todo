@@ -1,4 +1,4 @@
-import { get, post, put } from './axios'
+import { get, post, put } from './axios.js'
 
 export const getAAA = async (params) => await get('', params)
 export const setAAA = async (params) => await post('', params)
