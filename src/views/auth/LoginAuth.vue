@@ -65,6 +65,8 @@ import {
 import { useToast } from '@/composables/toast';
 
 export default { 
+    name: 'LoginAuth',
+    
     setup() {
         const userEmail = ref('');
         const userPassword = ref('');

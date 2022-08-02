@@ -81,6 +81,8 @@ import * as firebaseStorage from "firebase/storage";
 import { useToast } from '@/composables/toast';
 
 export default {
+    name: 'users_id',
+    
     setup() {
         const router = useRouter();
 

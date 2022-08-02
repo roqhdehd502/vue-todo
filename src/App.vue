@@ -1,5 +1,5 @@
 <template>
-  <NavigationBar style="position: sticky; width: 100%; top: 0; z-index: 5;" /><br />
+  <NavigationBar style="position: sticky; width: 100%; top: 0; z-index: 40;" /><br />
 
   <div class="container">
     <div class="row">
@@ -23,6 +23,8 @@ import Toast from "@/components/toasts/ToastComponent.vue";
 import CoinList from '@/components/coins/CoinMarketPrice.vue';
 
 export default {
+  name: 'App',
+  
   components: {
     NavigationBar,
     Toast,

@@ -75,6 +75,8 @@ import { useToast } from '@/composables/toast';
 
 
 export default {
+  name: 'TodoIndex',
+
   components: {
     ToDoList, 
     TodoForm,

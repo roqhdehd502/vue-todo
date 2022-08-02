@@ -62,6 +62,8 @@ import { db } from "../../firebase";
 import { useToast } from '@/composables/toast'; // 토스트 컴포저블
 
 export default {
+  name: 'todos _id',
+  
   setup() {
     const route = useRoute();
     const router = useRouter();

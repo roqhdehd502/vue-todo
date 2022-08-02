@@ -32,6 +32,8 @@
 import Modal from '../../modals/ModalComponent.vue'; // 모달 컴포넌트
 
 export default {
+  name: 'TodoDetail',
+  
   components: {
     Modal
   },
@@ -57,8 +59,3 @@ export default {
   }
 }
 </script>
-
-
-<style>
-
-</style>

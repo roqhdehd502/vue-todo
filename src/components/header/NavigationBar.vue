@@ -48,6 +48,8 @@ import {
 
 
 export default {
+    name: 'NavigationBar',
+    
     setup() {
         const isLogin = ref(false);
         const userObj = ref(null); 

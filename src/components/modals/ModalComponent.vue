@@ -21,11 +21,7 @@
 
 <script>
 export default {
-  setup() {
-    return {
-    
-    }
-  }
+  name: 'ModalComponent',
 }
 </script>
 

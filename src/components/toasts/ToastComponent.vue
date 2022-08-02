@@ -14,11 +14,14 @@
 
 
 <script>
-import { useToast } from '@/composables/toast'; // 토스트 컴포저블
+import { useToast } from '@/composables/toast';
+
 
 export default {
+  name: 'ToastComponent',
+
   setup() {
-    const { toasts } = useToast(); // 변경 사항시 알림
+    const { toasts } = useToast();
 
     return {
       toasts,
@@ -31,8 +34,7 @@ export default {
 <style scoped>
 .toast-box {
   position: fixed !important;
-  top: 10px;
-  right: 10px;
+  top: 10px; right: 10px;
   z-index: 50;
 }
 

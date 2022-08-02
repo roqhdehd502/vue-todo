@@ -28,6 +28,8 @@ import {
 import { useToast } from '@/composables/toast';
 
 export default { 
+  name: 'TodoForm',
+
   emits: [
     'add-todo',
   ],

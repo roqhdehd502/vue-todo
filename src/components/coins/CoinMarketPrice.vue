@@ -65,6 +65,8 @@ import { useToast } from '@/composables/toast';
 
 
 export default {
+  name: 'CoinMarketPrice',
+  
   setup() {
     const {
       showToast,
