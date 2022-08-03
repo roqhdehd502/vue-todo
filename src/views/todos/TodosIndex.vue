@@ -50,27 +50,14 @@
 
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router';
 
-import { 
-  getAuth,
-  onAuthStateChanged
-} from "firebase/auth";
-import { 
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  where,
-  orderBy,
-  addDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-
 import { todoMessages } from '@/common/messages';
+
+import { getUserInfo } from '@/remote/auth';
+import { loadTodos, createTodo, updateToggleTodo, disabledTodo } from '@/remote/todos';
 
 import ToDoList from '@/components/todos/TodoList.vue';
 import TodoForm from '@/components/todos/TodoForm.vue';
@@ -89,57 +76,38 @@ export default {
 
     const loading = ref(false); 
     const isLogin = ref(false);
-    const userObj = ref(null);
+    const userId = ref("");
     const todos = ref([]);
 
-    const loginStatus = () => {
-      onAuthStateChanged(getAuth(), (user) => {
-        if (user) {
+    const getTodos = async () => {
+      if (getUserInfo()) {
+        try {
+          userId.value = getUserInfo().uid;
           isLogin.value = true;
-          userObj.value = user.uid;
-          getTodos(userObj.value)
-          return;
-        } else {
-          isLogin.value = false;
-          return;
+          loading.value = false;
+          todos.value = await loadTodos(userId.value);
+          loading.value = true;
+        } catch(err) {
+          store.dispatch('toast/triggerToast', todoMessages.FAILED_TODOS_INFO);
         }
-      });
-    }
-    loginStatus();
-    
-    const getTodos = async (uid) => {
-      try {
-        let q = query(
-          collection(db, "todos")
-          , where("userId", "==", uid)
-          , where("enabled", "==", true)
-          , orderBy("uploadDate", "desc")
-        );
-
-        onSnapshot(q, (querySnapshot) => {
-          todos.value = [];
-          querySnapshot.forEach((doc) => {
-            let data = doc.data();
-            data.docId = doc.id;
-            todos.value.push(data);
-          })
-        });
-
-        loading.value = true;
-      } catch(err) {
-        store.dispatch('toast/triggerToast', todoMessages.FAILED_TODOS_INFO);
+      } else {
+        isLogin.value = false;
       }
     };
+    onMounted(() => { getTodos() });
+    
 
     const addTodo = async (todo) => {
       try {
-        await addDoc(collection(db, "todos"), {
+        const addTodoObj = {
           userId: todo.userId,
           subject: todo.subject,
           uploadDate: todo.uploadDate,
           isCompleted: todo.isCompleted,
           enabled: todo.enabled,
-        });
+        }
+        await createTodo(addTodoObj);
+        getTodos();
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_CREATE_TODO_INFO);
       }
@@ -148,11 +116,9 @@ export default {
     const toggleTodo = async (index, isChecked) => {
       const docId = todos.value[index].docId;
       try {
-        const docRef = doc(db, "todos", docId);
-        await updateDoc(docRef, {
-          isCompleted: isChecked
-        });
+        await updateToggleTodo(docId, isChecked);
         store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
+        getTodos();
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_UPDATE_TODO_INFO);
       }
@@ -160,12 +126,11 @@ export default {
 
     const deleteTodo = async (docId) => {
       try {
-        const docRef = doc(db, "todos", docId);
-        await updateDoc(docRef, {
-          enabled: false
-        });
+        await disabledTodo(docId);
         store.dispatch('toast/triggerToast', todoMessages.SUCCESS_DELETE_TODO_INFO);
+        getTodos();
       } catch(err) {
+        console.log(err);
         store.dispatch('toast/triggerToast', todoMessages.FAILED_DELETE_TODO_INFO);
       }
     };
@@ -179,9 +144,8 @@ export default {
     return {
       loading,
       isLogin,
-      userObj,
       todos,
-     
+
       getTodos,
       addTodo,
       toggleTodo,
@@ -204,6 +168,6 @@ export default {
 .todo-list-overflow {
   border-top: 1px solid #dcdcdc; border-bottom: 1px solid #dcdcdc;
   overflow: auto;
-  height: 230px;
+  height: 300px;
 }
 </style>

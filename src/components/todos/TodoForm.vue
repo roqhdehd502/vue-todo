@@ -22,12 +22,9 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
-import { 
-  getAuth
-  , onAuthStateChanged
-} from "firebase/auth";
-
 import { todoMessages } from '@/common/messages';
+
+import { getUserInfo } from '@/remote/auth';
 
 
 export default { 
@@ -42,16 +39,10 @@ export default {
 
     const userId = ref(null);
     const getUserId = () => {
-      onAuthStateChanged(getAuth(), (user) => {
-        if (user) {
-          userId.value = user.uid;
-          return;
-        } else {
-          return;
-        }
-      });
+      userId.value = getUserInfo().uid;
     }
     getUserId();
+
 
     const todo = ref('');
     const addTodo = () => {

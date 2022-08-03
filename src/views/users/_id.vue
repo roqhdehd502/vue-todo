@@ -51,7 +51,7 @@
         </div>
         <div class="row g-2">
             <button 
-                @click="onUpdate"
+                @click="onUpdate(userObj)"
                 type="button" 
                 class="btn btn-success"
             >
@@ -71,13 +71,9 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
-import { 
-  getAuth, 
-  updateProfile 
-} from "firebase/auth";
-import * as firebaseStorage from "firebase/storage";
-
 import { authMessages } from '@/common/messages';
+
+import { getUserInfo, UpdateUserInfo } from '@/remote/auth';
 
 
 export default {
@@ -91,83 +87,46 @@ export default {
         const userObj = ref(null);
         const isModifyMode = ref(false);
 
-        const getUserObj = async () => {
-            try {
-                if (getAuth().currentUser !== null) {
-                  userObj.value = { ...getAuth().currentUser };
-                } else {
-                  store.dispatch('toast/triggerToast', authMessages.FAILED_USER_INFO);
-                }
-                loading.value = false;
-            } catch(err) {
-                store.dispatch('toast/triggerToast', authMessages.FAILED_USER_INFO);
-            }
+        const getUserObj = () => {
+          userObj.value = getUserInfo();
+          loading.value = false;
         }
         getUserObj();
         
         const modifyMode = () => {
-            if (isModifyMode.value === false) {
-                isModifyMode.value = true;
-            } else {
-                isModifyMode.value = false;
-            }
+          if (isModifyMode.value === false) {
+            isModifyMode.value = true;
+          } else {
+            isModifyMode.value = false;
+          }
         }
 
-        const onUpdate = async () => {
-            try {
-                const storage = firebaseStorage.getStorage();
-                const storageRef = firebaseStorage.ref(storage, `userimages/${userObj.value.uid}`);
-                const imageFile = document.querySelector('#user-image').files[0];
-                let imageURL = null;
-
-                if (imageFile !== undefined) {
-                  firebaseStorage.uploadBytes(storageRef, imageFile)
-                  .then((snapshot) => {
-                    console.log("upload image: ", snapshot);
-                    firebaseStorage.getDownloadURL(storageRef)
-                      .then((url) => {
-                        imageURL = url;
-                      })
-                      .catch((err) => {
-                        console.log(err);
-                        store.dispatch('toast/triggerToast', authMessages.INVALID_UPLOAD_USER_IMAGE_INFO);
-                      }
-                    );
-                  });
-                }
-                
-                updateProfile(getAuth().currentUser, {
-                  displayName: userObj.value.displayName,
-                  photoURL: imageURL === undefined ? userObj.value.photoURL : imageURL,
-                }).then(() => {
-                  store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
-                  isModifyMode.value = false;
-                  router.push({
-                      name: 'TodosList'
-                  });
-                }).catch((err) => {
-                  console.log(err);
-                  store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
-                });
-            } catch(err) {
-                store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
-            }
-        }
-
-        const moveToTodoListPage = () => { 
+        const onUpdate = async (userObj) => {
+          try {
+            const imageFile = document.querySelector('#user-image').files[0];
+            UpdateUserInfo(userObj, imageFile);
             router.push({
                 name: 'TodosList'
             });
+          } catch(err) {
+            store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
+          }
+        }
+
+        const moveToTodoListPage = () => { 
+          router.push({
+            name: 'TodosList'
+          });
         }
 
         return {
-            loading,
-            userObj,
-            isModifyMode,
-            
-            modifyMode,
-            onUpdate,
-            moveToTodoListPage,
+          loading,
+          userObj,
+          isModifyMode,
+          
+          modifyMode,
+          onUpdate,
+          moveToTodoListPage,
         }
     }
 }

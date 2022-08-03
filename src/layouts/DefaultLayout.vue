@@ -1,12 +1,17 @@
 <template>
-  <NavigationBar style="position: sticky; width: 100%; top: 0; z-index: 40;" />
+  <NavigationBar 
+    :userObj="userObj"
+    style="position: sticky; width: 100%; top: 0; z-index: 40;" 
+  />
 
   <div class="container">
-    <div class="mt-1 row">
-      <div class="col-md-6 align-self-start left-content">
+    <div class="mt-3 mb-3 row">
+      <div class="col coin-ticker">
         <CoinList  />
       </div>
-      <div class="col-md-6 align-self-end">
+    </div>
+    <div class="mt-3 row">
+      <div class="col">
         <router-view />
       </div>
     </div>
@@ -16,6 +21,10 @@
 
 
 <script>
+import { ref, watchEffect } from 'vue';
+
+import { getUserInfo } from '@/remote/auth';
+
 import NavigationBar from '@/components/header/NavigationBar.vue';
 import CoinList from '@/components/coins/CoinMarketPrice.vue';
 
@@ -27,5 +36,30 @@ export default {
     NavigationBar,
     CoinList,
   },
+
+  setup() {
+    const userObj = ref({});
+
+    const userStatusInit = () => {
+      userObj.value = getUserInfo();
+    };
+    watchEffect(()=> userStatusInit());
+
+    return {
+      userObj,
+
+      userStatusInit,
+    }
+  }
 }
 </script>
+
+
+
+<style>
+.coin-ticker {
+  overflow: auto;
+  max-height: 330px; 
+  padding-left: 0px; padding-right: 0px;
+}
+</style>

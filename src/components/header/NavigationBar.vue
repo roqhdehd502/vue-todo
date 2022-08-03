@@ -5,7 +5,7 @@
         </router-link>
         <div> 
           <div 
-            v-if="isLogin"
+            v-if="userObj"
             class="navbar-brand home-link"
           >
             <img 
@@ -37,68 +37,57 @@
 
 
 <script>
-import { ref } from 'vue';
+import { useStore } from 'vuex';
 import router from '@/router';
 
-import { 
-  getAuth
-  , onAuthStateChanged
-  , signOut 
-} from "firebase/auth";
+import { authMessages } from '@/common/messages';
+
+import { signOutUserInfo } from '@/remote/auth';
 
 
 export default {
-    name: 'NavigationBar',
-    
-    setup() {
-        const isLogin = ref(false);
-        const userObj = ref(null); 
-        
-        const userStatus = () => {
-          onAuthStateChanged(getAuth(), (user) => {
-            if (user) {
-              isLogin.value = true;
-              userObj.value = user;
-            } else {
-              userObj.value = null;
-            }
-          });
-        }
-        userStatus();
+  name: 'NavigationBar',
 
-        const moveToLogin = () => {
-            router.push({
-                name: 'Login',
-            });
-        }
-
-        const moveToUser = (uid) => {
-            router.push({
-              name: 'User',
-              params: {
-                  id: uid
-              }
-            });
-        }
-
-        const logout = () => {
-          signOut(getAuth()).then(() => {
-            userObj.value = null;
-            window.location.replace('/login');
-          }).catch((error) => {
-            console.log("error message: ", error.message)
-          });
-        }
-
-        return {
-            isLogin,
-            userObj,
-
-            moveToLogin,
-            moveToUser,
-            logout,
-        }
+  props: {
+    userObj: {
+      type: Object,
+      required: false,
     }
+  },
+  
+  setup() {
+    const store = useStore();
+
+    const moveToLogin = () => {
+      router.push({
+        name: 'Login',
+      });
+    }
+
+    const moveToUser = (uid) => {
+      router.push({
+        name: 'User',
+        params: {
+          id: uid
+        }
+      });
+    }
+
+    const logout = () => {
+      try {
+        signOutUserInfo();
+        window.location.replace('/');
+      } catch (error) {
+        store.dispatch('toast/triggerToast', authMessages.FAILED_LOGOUT);
+      }
+    }
+
+    return {
+      moveToLogin,
+      moveToUser,
+      logout,
+    }
+  }
 }
 </script>
 

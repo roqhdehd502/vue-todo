@@ -4,16 +4,29 @@ import store from './store';
 import router from './router';
 
 // firebase
-import { db } from './firebaseConfig';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db, storage } from './firebaseConfig';
 
 // bootstrap 5.0
 import 'bootstrap/dist/js/bootstrap.bundle';
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 
-createApp(App)
-  .use(store)
-  .use(router)
-  .mount('#app')
+
+let app;
+
+onAuthStateChanged(getAuth(), () => {
+  // if (user) {
+    
+  // }
+  
+  if (!app) {
+    app = createApp(App)
+      .use(store)
+      .use(router)
+      .mount('#app')
+  }
+})
 
 db;
+storage;

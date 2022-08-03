@@ -36,7 +36,7 @@
   </div><br />
   <div class="row g-2">
     <button
-      @click="onUpdate"
+      @click="onUpdate(docId)"
       type="button" 
       class="btn btn-success"
       :disabled="!isTodoUpdated"
@@ -56,11 +56,11 @@ import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
 import _ from 'lodash';
 
 import { todoMessages } from '@/common/messages';
+
+import { loadTodo, updateTodo } from '@/remote/todos';
 
 
 export default {
@@ -76,22 +76,16 @@ export default {
     const todo = ref(null);
     const originTodo = ref(null);
     
-    const getTodo = async () => {
+    const getTodo = async (id) => {
       try {
-        const docRef = doc(db, "todos", docId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          todo.value = { ...docSnap.data() };
-          originTodo.value = { ...docSnap.data() };
-        } else {
-          store.dispatch('toast/triggerToast', todoMessages.FAILED_TODO_INFO);
-        }
+        todo.value = { ... await loadTodo(id) };
+        originTodo.value = { ... await loadTodo(id) };
         loading.value = false;
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_TODO_INFO);
       }
     };
-    getTodo();
+    getTodo(docId);
 
     const isTodoUpdated = computed(() => {
       return !_.isEqual(todo.value, originTodo.value);
@@ -105,7 +99,7 @@ export default {
       }
     }
 
-    const onUpdate = async () => {
+    const onUpdate = async (id) => {
       try {
         if (
           todo.value.subject === "" ||
@@ -114,13 +108,12 @@ export default {
           store.dispatch('toast/triggerToast', todoMessages.INVALID_UPDATE_TODO_INFO);
           return;
         } else {
-          const docRef = doc(db, "todos", docId);
-          await updateDoc(docRef, {
+          const updateTodoObj = {
             userId: originTodo.value.userId,
             subject: todo.value.subject,
             isCompleted: todo.value.isCompleted,
-            enabled: originTodo.value.enabled,
-          });
+          }
+          await updateTodo(id, updateTodoObj);
           store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
           router.push({
             name: 'TodosList'
@@ -138,6 +131,7 @@ export default {
     }
 
     return {
+      docId,
       loading,
       todo,
       originTodo,

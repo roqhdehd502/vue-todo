@@ -3,7 +3,7 @@
         <div class="row">
             <router-link :to="{ name: 'TodosList' }" class="router-link-style">
                 <h1 class="h1-style">
-                    회원가입
+                    Coin Todos
                 </h1>
             </router-link>
             <div class="card card-style">
@@ -43,6 +43,9 @@
                     </div>
                 </div>
             </div>
+            <div class="extra-style">
+                <router-link to="/login">로그인</router-link>
+            </div>
         </div> 
     </div> 
 </template> 
@@ -54,44 +57,41 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router';
 
-import { 
-  getAuth
-  , createUserWithEmailAndPassword
-} from "firebase/auth";
-
 import { authMessages } from '@/common/messages';
+
+import { createUserInfo } from '@/remote/auth';
 
 
 export default { 
     name: 'SignUpAuth',
 
     setup() {
-        const store = useStore();
+      const store = useStore();
 
-        const userEmail = ref('');
-        const userPassword = ref('');
-        
-        const signInSubmit = () => {
-            createUserWithEmailAndPassword(getAuth(), userEmail.value, userPassword.value)
-            .then((userCredential) => {
-              console.log(userCredential.user);
-              store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
-              router.replace("/")
-              return;
-            })
-            .catch((error) => {
-              console.log(error.message);
-              store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
-              return;
-            });  
-        };
-
-        return {
-            userEmail,
-            userPassword,
-            
-            signInSubmit,
+      const userEmail = ref('');
+      const userPassword = ref('');
+      
+      const signInSubmit = () => {
+        if (userEmail.value === '' || userPassword.value === '') {
+          store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
+          return;
         }
+
+        try {
+          createUserInfo(userEmail.value, userPassword.value);
+          store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
+          router.replace('/');
+        } catch (error) {
+          store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
+        }
+      };
+
+      return {
+          userEmail,
+          userPassword,
+          
+          signInSubmit,
+      }
     }
 }; 
 </script>
@@ -105,23 +105,33 @@ export default {
     align-items: center;
     min-height: 75vh;
 }
+
 .router-link-style {
     color: black;
     text-decoration: none;
 }
+
 .h1-style {
     text-align: center;
     font-weight: 900;
     margin-bottom: 50px;
 }
+
 .card-style {
     padding: 50px 0px 50px 0px;
     margin-bottom: 15px;
 }
+
 .btn-style {
     width: auto !important;
 }
+
 .extra-style {
     text-align: center;
+}
+
+.extra-style a {
+    text-decoration: none;
+    color: black;
 }
 </style>

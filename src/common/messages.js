@@ -1,5 +1,11 @@
 export const authMessages =
 {
+  SUCCESS_LOGOUT :
+  { 
+    message: '로그아웃 되었습니다.', 
+    type: 'success' 
+  },
+
   SUCCESS_CREATE_USER_INFO :
   { 
     message: '성공적으로 등록 되었습니다.', 
@@ -36,16 +42,22 @@ export const authMessages =
     type: 'warning' 
   },
 
+  FAILED_LOGOUT :
+  { 
+    message: '오류로 인해 로그아웃 할 수 없습니다!', 
+    type: 'danger' 
+  },
+
   FAILED_USER_INFO :
   { 
     message: '오류로 인해 회원 정보를 불러올 수 없습니다!', 
-    type: 'warning' 
+    type: 'danger' 
   },
 
   FAILED_UPDATE_USER_INFO :
   { 
     message: '오류로 인해 회원 정보를 변경 할 수 없습니다!', 
-    type: 'warning' 
+    type: 'danger' 
   },
 };
 

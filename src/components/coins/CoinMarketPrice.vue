@@ -45,7 +45,7 @@
             <td>
               {{ priceFormatting(coin.quotes.KRW.price) }}&nbsp;원
             </td>
-            <td :class="percentChangeColor(coin.quotes.KRW.percent_change_24h)">
+            <td :class="pricePercentChangeColor(coin.quotes.KRW.percent_change_24h)">
               {{ coin.quotes.KRW.percent_change_24h }}&#37;
             </td>
           </tr>
@@ -62,6 +62,8 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import { coinMessages } from '@/common/messages';
+import { priceFormatting, pricePercentChangeColor } from '@/common/filters';
+
 import { getCoinpaprikaAPI } from '@/remote/coinpaprikaAPI';
 
 
@@ -85,25 +87,12 @@ export default {
         store.dispatch('toast/triggerToast', coinMessages.FAILED_COINS_INFO);
       }
     });
+    getCoins();
 
     const reloading = () => {
       coins.value = [];
       getCoins();
     };
-
-    const priceFormatting = (price) => {
-      return new Intl.NumberFormat('en-US').format(Math.round(price));
-    };
-
-    const percentChangeColor = (percentChange) => {
-      if(percentChange > 0) {
-        return 'upper-red';
-      } else if(percentChange < 0) {
-        return 'lower-blue';
-      } else {
-        return 'maintain-black';
-      }
-    }
 
     setInterval(() => {
       getCoins();
@@ -117,7 +106,7 @@ export default {
       getCoins,
       reloading,
       priceFormatting,
-      percentChangeColor,
+      pricePercentChangeColor,
     }
   },
 }
