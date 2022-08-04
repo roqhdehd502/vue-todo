@@ -45,6 +45,8 @@
             </div>
             <div class="extra-style">
                 <router-link to="/signup">회원가입</router-link>
+                &nbsp;|&nbsp;
+                <router-link to="/">홈</router-link>
             </div>
         </div> 
     </div> 

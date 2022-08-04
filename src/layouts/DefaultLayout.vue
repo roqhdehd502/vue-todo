@@ -23,7 +23,10 @@
 <script>
 import { ref, watchEffect } from 'vue';
 
-import { getUserInfo } from '@/remote/auth';
+import { 
+  getAuth
+  , onAuthStateChanged
+} from "firebase/auth";
 
 import NavigationBar from '@/components/header/NavigationBar.vue';
 import CoinList from '@/components/coins/CoinMarketPrice.vue';
@@ -41,7 +44,13 @@ export default {
     const userObj = ref({});
 
     const userStatusInit = () => {
-      userObj.value = getUserInfo();
+      onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+          userObj.value = user;
+        } else {
+          userObj.value = null;
+        }
+      });
     };
     watchEffect(()=> userStatusInit());
 
