@@ -48,7 +48,7 @@ export default {
         if (user) {
           userObj.value = user;
         } else {
-          userObj.value = null;
+          userObj.value = null;//gh
         }
       });
     };
