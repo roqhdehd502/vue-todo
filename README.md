@@ -1,6 +1,11 @@
 
 # Coin Todo
 
+## 프로젝트 작업 이력
+
+[Notion](https://precious-specialist-25c.notion.site/701de4f78c5a4cce9456bedb379ee6a9?v=a9c00973c4ff41f5a2d2b79f39f790b4)
+<hr />
+
 ## 배포 페이지
 
 [Coin Todo](https://roqhdehd502.github.io/vue-todo)
