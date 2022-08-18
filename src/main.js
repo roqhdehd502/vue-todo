@@ -16,10 +16,6 @@ import "bootstrap"
 let app;
 
 onAuthStateChanged(getAuth(), () => {
-  // if (user) {
-    
-  // }
-  
   if (!app) {
     app = createApp(App)
       .use(store)
