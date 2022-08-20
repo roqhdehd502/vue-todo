@@ -75,7 +75,19 @@
                             </div>
                           </div>
                         </div>
-                        
+                        <div class="input-group input-group-lg mb-3">
+                            <input 
+                              v-model="verifiedPassword"
+                              @input="passwordVerified(verifiedPassword)" 
+                              type="password"
+                              class="form-control" 
+                              placeholder="비밀번호 확인"
+                              required
+                            >
+                            <div class="valid-tooltip">
+                              Looks good!
+                            </div>
+                        </div>
                     </div>
                     <div class="d-grid">
                         <button @click="signInSubmit" type="button" class="btn btn-success btn-lg">
@@ -86,8 +98,9 @@
             </div>
             <div class="extra-style">
                 <router-link to="/login">로그인</router-link>
-                &nbsp;|&nbsp;
-                <router-link to="/">홈</router-link>
+            </div>
+            <div class="extra-style g-3">
+              <router-link to="/">메인 페이지로 돌아가기</router-link>
             </div>
         </div> 
     </div> 
@@ -118,6 +131,8 @@ export default {
       const isSafetyPassword = ref(false);
       const userPasswordFeedback = ref('');
       const passwordStrengthLevel = ref('');
+      const verifiedPassword = ref('');
+      const isVerifiedPassword = ref(false);
 
       const selectDirect = (directInput) => {
         switch(directInput) {
@@ -154,12 +169,21 @@ export default {
             passwordStrengthLevel.value = 'bg-danger';
         }
       }
+
+      const passwordVerified = (verifiedPasswordInput) => {
+        if (verifiedPasswordInput !== userPassword.value) {
+          isVerifiedPassword.value = false;
+        } else {
+          isVerifiedPassword.value = true;
+        }
+      }
       
       const signInSubmit = () => {
         if (userId.value === '' 
           || userEmail.value === '' 
           || userPassword.value === ''
-          || !isSafetyPassword.value) {
+          || !isSafetyPassword.value
+          || !isVerifiedPassword.value) {
           store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
           return;
         }
@@ -182,9 +206,12 @@ export default {
           isSafetyPassword,
           userPasswordFeedback,
           passwordStrengthLevel,
+          verifiedPassword,
+          isVerifiedPassword,
           
           selectDirect,
           passwordStrength,
+          passwordVerified,
           signInSubmit,
       }
     }
@@ -228,5 +255,9 @@ export default {
 .extra-style a {
     text-decoration: none;
     color: black;
+}
+
+.extra-style a:hover {
+    color: green;
 }
 </style>

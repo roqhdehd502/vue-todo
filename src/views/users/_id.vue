@@ -13,8 +13,38 @@
     >
         <div class="row">
             <div class="col">
-                <h1 class="display-3">{{ userObj.displayName ? userObj.displayName : userObj.email }}</h1>
-                <h4>{{ userObj.email }}</h4>
+                <h1 class="display-3">
+                  {{ userObj.displayName ? userObj.displayName : userObj.email }}
+                </h1>
+                <h4>
+                  {{ userObj.email }}&nbsp;
+                  <span v-if="userObj.emailVerified">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-info btn-sm"
+                      disabled
+                    >
+                      인증됨
+                    </button>
+                  </span>
+                  <span v-else>
+                    <button 
+                      type="button" 
+                      class="btn btn-info btn-sm"
+                      @click="onEmailVerify"
+                    >
+                      인증하기
+                    </button>&nbsp;
+                    <span 
+                      class="badge rounded-pill bg-secondary"
+                      data-bs-toggle="tooltip" 
+                      data-bs-placement="bottom" 
+                      title="계정 찾기시 회원님의 이메일이 인증되어야 합니다."
+                    >
+                      ?
+                    </span>
+                  </span>
+                </h4>
             </div>
         </div>
         <div class="row mt-3">
@@ -51,17 +81,34 @@
         </div>
         <div class="row g-2">
             <button 
-                @click="onUpdate(userObj)"
+                @click="updateUser(userObj)"
                 type="button" 
                 class="btn btn-success"
             >
                 저장
             </button>
             <button class="btn btn-secondary" @click="modifyMode">
-                취소
+                돌아가기
+            </button>
+        </div><hr />
+        <div class="row g-2">
+            <button 
+                @click.stop="openModal()"
+                type="button" 
+                class="btn btn-danger"
+            >
+                회원탈퇴
             </button>
         </div>
     </div>
+
+    <teleport to='#modal'>
+      <UserDetail 
+        v-if="showModal" 
+        @close="closeModal" 
+        @delete="deleteUser"
+      />
+    </teleport>
 </template>
 
 
@@ -73,11 +120,17 @@ import { useRouter } from 'vue-router';
 
 import { authMessages } from '@/common/messages';
 
-import { getUserInfo, UpdateUserInfo } from '@/remote/auth';
+import { getUserInfo, updateUserInfo, sendUserEmailVerify, deleteUserInfo } from '@/remote/auth';
+
+import UserDetail from '@/components/users/UserDetail.vue';
 
 
 export default {
     name: 'users_id',
+
+    components: {
+      UserDetail
+    },
     
     setup() {
         const store = useStore();
@@ -86,12 +139,31 @@ export default {
         const loading = ref(true);
         const userObj = ref(null);
         const isModifyMode = ref(false);
+        const showModal = ref(false);
+
+        const openModal = () => {
+          showModal.value = true;
+        };
+
+        const closeModal = () => {
+          showModal.value = false;
+        };
 
         const getUserObj = () => {
           userObj.value = getUserInfo();
           loading.value = false;
+          console.log(userObj.value.emailVerified)
         }
         getUserObj();
+
+        const onEmailVerify = () => {
+          try {
+            sendUserEmailVerify();
+            store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_USER_EMAIL_VERIFY);
+          } catch (error) {
+            store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_USER_EMAIL_VERIFY);
+          }
+        }
         
         const modifyMode = () => {
           if (isModifyMode.value === false) {
@@ -101,10 +173,10 @@ export default {
           }
         }
 
-        const onUpdate = async (userObj) => {
+        const updateUser = async (userObj) => {
           try {
             const imageFile = document.querySelector('#user-image').files[0];
-            UpdateUserInfo(userObj, imageFile);
+            updateUserInfo(userObj, imageFile);
             router.push({
                 name: 'TodosList'
             });
@@ -112,6 +184,18 @@ export default {
             store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
           }
         }
+
+        const deleteUser = () => {
+          try {
+            deleteUserInfo();
+            showModal.value = false;
+            router.push({
+              name: 'TodosList'
+            });
+          } catch(err) {
+            store.dispatch('toast/triggerToast', authMessages.FAILED_DELETE_USER_INFO);
+          }
+        };
 
         const moveToTodoListPage = () => { 
           router.push({
@@ -123,9 +207,14 @@ export default {
           loading,
           userObj,
           isModifyMode,
+          showModal,
           
+          openModal,
+          closeModal,
+          onEmailVerify,
           modifyMode,
-          onUpdate,
+          updateUser,
+          deleteUser,
           moveToTodoListPage,
         }
     }
@@ -161,8 +250,9 @@ export default {
 }
 
 .modify-mode-style {
+    padding-left: 5%; padding-right: 5%;
     justify-content: center;
     align-items: center;
-    padding-top: 15vh;
+    padding-top: 25vh;
 }
 </style>

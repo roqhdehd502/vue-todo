@@ -60,17 +60,19 @@ import {
 } from "firebase/auth";
 import { 
   collection,
-  doc,
+  //doc,
   onSnapshot,
   query,
   where,
   orderBy,
-  addDoc,
-  updateDoc,
+  //addDoc,
+  //updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
 import { todoMessages } from '@/common/messages';
+
+import { createTodo, updateToggleTodo, disabledTodo } from '@/remote/todos';
 
 import ToDoList from '@/components/todos/TodoList.vue';
 import TodoForm from '@/components/todos/TodoForm.vue';
@@ -86,10 +88,12 @@ export default {
 
   setup() {
     const store = useStore();
+
     const loading = ref(false); 
     const isLogin = ref(false);
     const userObj = ref(null);
     const todos = ref([]);
+
     const loginStatus = () => {
       onAuthStateChanged(getAuth(), (user) => {
         if (user) {
@@ -126,47 +130,47 @@ export default {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_TODOS_INFO);
       }
     };
+
     const addTodo = async (todo) => {
       try {
-        await addDoc(collection(db, "todos"), {
+        const addTodoObj = {
           userId: todo.userId,
           subject: todo.subject,
           uploadDate: todo.uploadDate,
           isCompleted: todo.isCompleted,
           enabled: todo.enabled,
-        });
+        }
+        await createTodo(addTodoObj);
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_CREATE_TODO_INFO);
       }
     };
+
     const toggleTodo = async (index, isChecked) => {
       const docId = todos.value[index].docId;
       try {
-        const docRef = doc(db, "todos", docId);
-        await updateDoc(docRef, {
-          isCompleted: isChecked
-        });
+        await updateToggleTodo(docId, isChecked);
         store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_UPDATE_TODO_INFO);
       }
     };
+
     const deleteTodo = async (docId) => {
       try {
-        const docRef = doc(db, "todos", docId);
-        await updateDoc(docRef, {
-          enabled: false
-        });
+        await disabledTodo(docId);
         store.dispatch('toast/triggerToast', todoMessages.SUCCESS_DELETE_TODO_INFO);
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_DELETE_TODO_INFO);
       }
     };
+
     const moveToLogin = () => {
       router.push({
         name: 'Login',
       });
     }
+
     return {
       loading,
       isLogin,
@@ -194,6 +198,6 @@ export default {
 .todo-list-overflow {
   border-top: 1px solid #dcdcdc; border-bottom: 1px solid #dcdcdc;
   overflow: auto;
-  height: 230px;
+  height: 300px;
 }
 </style>

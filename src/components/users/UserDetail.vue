@@ -1,7 +1,7 @@
 <template>
   <Modal>
     <template #modalTitle>
-      정말 삭제 하시겠습니까?
+      정말 탈퇴 하시겠습니까?
     </template>
 
     <template #modalBody>
@@ -34,7 +34,7 @@
 import Modal from '../modals/ModalComponent.vue';
 
 export default {
-  name: 'TodoDetail',
+  name: 'UserDetail',
   
   components: {
     Modal

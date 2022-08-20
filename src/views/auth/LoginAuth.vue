@@ -46,7 +46,10 @@
             <div class="extra-style">
                 <router-link to="/signup">회원가입</router-link>
                 &nbsp;|&nbsp;
-                <router-link to="/">홈</router-link>
+                <router-link to="/">비밀번호 찾기</router-link>
+            </div>
+            <div class="extra-style g-3">
+              <router-link to="/">메인 페이지로 돌아가기</router-link>
             </div>
         </div> 
     </div> 
@@ -145,5 +148,9 @@ export default {
 .extra-style a {
     text-decoration: none;
     color: black;
+}
+
+.extra-style a:hover {
+    color: green;
 }
 </style>

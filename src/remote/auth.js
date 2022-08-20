@@ -3,7 +3,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateProfile,
+  sendEmailVerification,
+  deleteUser,
 } from "firebase/auth";
 
 import * as firebaseStorage from "firebase/storage";
@@ -47,7 +49,7 @@ export const signOutUserInfo = () => {
 }
 
 
-export const UpdateUserInfo = async (userObj, userImageInfo) => {
+export const updateUserInfo = async (userObj, userImageInfo) => {
   const storage = firebaseStorage.getStorage();
   const storageRef = firebaseStorage.ref(storage, `userimages/${userObj.uid}`);
   const imageFile = userImageInfo;
@@ -63,6 +65,27 @@ export const UpdateUserInfo = async (userObj, userImageInfo) => {
   
   updateProfile(getAuth().currentUser, {
     displayName: userObj.displayName,
-    photoURL: imageURL === undefined ? userObj.photoURL : imageURL,
+    photoURL: imageURL === undefined ? userObj.photoURL : imageURL
+  });
+}
+
+
+export const sendUserEmailVerify = () => {
+  getAuth().languageCode = 'ko';
+  sendEmailVerification(getAuth().currentUser)
+    .then(() => {
+      console.log("EMAIL VERIFICATION SEND SUCCESS.");
+    })
+    .catch(() => {
+      console.log("EMAIL VERIFICATION SEND FAILD.");
+    });
+}
+
+
+export const deleteUserInfo = () => {
+  deleteUser(getAuth().currentUser).then(() => {
+    console.log("DELETE USER SUCCESS.");
+  }).catch(() => {
+    console.log("DELETE USER FAILED!");
   });
 }

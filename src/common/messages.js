@@ -18,6 +18,12 @@ export const authMessages =
     type: 'success' 
   },
 
+  SUCCESS_SEND_USER_EMAIL_VERIFY :
+  { 
+    message: '인증 메시지를 전송 하였습니다.', 
+    type: 'success' 
+  },
+
   INVALID_ACCESS :
   { 
     message: '올바르지 않은 접근입니다!', 
@@ -57,6 +63,18 @@ export const authMessages =
   FAILED_UPDATE_USER_INFO :
   { 
     message: '오류로 인해 회원 정보를 변경 할 수 없습니다!', 
+    type: 'danger' 
+  },
+  
+  FAILED_SEND_USER_EMAIL_VERIFY :
+  { 
+    message: '오류로 인해 인증 메시지를 전송 할 수 없습니다!', 
+    type: 'danger' 
+  },
+
+  FAILED_DELETE_USER_INFO :
+  {
+    message: '오류로 인해 회원 정보를 삭제 할 수 없습니다!', 
     type: 'danger' 
   },
 };
