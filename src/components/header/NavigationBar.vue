@@ -76,7 +76,7 @@ export default {
     const logout = () => {
       try {
         signOutUserInfo();
-        window.location.replace('/');
+        window.location.replace('/vue-todo');
       } catch (error) {
         store.dispatch('toast/triggerToast', authMessages.FAILED_LOGOUT);
       }
