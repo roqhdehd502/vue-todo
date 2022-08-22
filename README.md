@@ -52,9 +52,9 @@
         ㄴEmptyLayout.vue ... 로그인 / 회원가입 및 프로필 페이지 레이아웃
 	
     ㄴremote
-        ㄴauth.js ... 파이어베이스 인증 처리
+        ㄴauth.js ... 유저 정보 파이어베이스 인증 처리
         ㄴcoinpaprikaAPI.js ... Coinpaprika 코인 시세 API 처리
-        ㄴtodos.js ... 파이어스토어 처리
+        ㄴtodos.js ... Todo 파이어스토어 처리
 	
     ㄴrouter
         ㄴindex.js ... Vue-router 메인 설정
