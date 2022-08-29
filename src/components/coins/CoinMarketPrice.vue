@@ -58,13 +58,11 @@
 
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import { coinMessages } from '@/common/messages';
 import { priceFormatting, pricePercentChangeColor } from '@/common/filters';
-
-import { getCoinpaprikaAPI } from '@/remote/coinpaprikaAPI';
 
 
 export default {
@@ -80,17 +78,16 @@ export default {
 
     const getCoins = onMounted(async () => {
       try {
-        const res = await getCoinpaprikaAPI();
-        coins.value = res.data.slice(0, coinTypeLength.value);
+        await store.dispatch('coinAPI/getCoinAPI');
+        const res = computed(() => store.getters['coinAPI/getCoins']);
+        coins.value = res.value.slice(0, coinTypeLength.value);
         loading.value = true;
       } catch (error) {
         store.dispatch('toast/triggerToast', coinMessages.FAILED_COINS_INFO);
       }
     });
-    getCoins();
 
     const reloading = () => {
-      coins.value = [];
       getCoins();
     };
 
