@@ -1,3 +1,3 @@
-# vue-todo
+# Coin Todo
 
-Vue todo 프로젝트 배포 브랜치 입니다.
+Coin Todo 프로젝트 배포 브랜치 입니다.
