@@ -29,17 +29,17 @@ export const loadTodo = async (docId) => {
 export const loadTodos = async (uid) => {
   let todos = [];
   let q = query(
-    collection(db, "todos")
-    , where("userId", "==", uid)
-    , where("enabled", "==", true)
-    , orderBy("uploadDate", "desc")
+    collection(db, "todos"),
+    where("userId", "==", uid),
+    where("enabled", "==", true),
+    orderBy("uploadDate", "desc")
   );
   // onSnapshot(q, (querySnapshot) => {
   //   querySnapshot.forEach((doc) => {
   //     let data = doc.data();
   //     data.docId = doc.id;
   //     todos.push(data);
-  //   })
+  //   });
   // });
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
@@ -47,7 +47,6 @@ export const loadTodos = async (uid) => {
     data.docId = doc.id;
     todos.push(data);
   });
-
   return todos;
 }
 

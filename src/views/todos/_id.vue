@@ -60,8 +60,6 @@ import _ from 'lodash';
 
 import { todoMessages } from '@/common/messages';
 
-import { loadTodo, updateTodo } from '@/remote/todos';
-
 
 export default {
   name: 'todos_id',
@@ -78,8 +76,10 @@ export default {
     
     const getTodo = async (id) => {
       try {
-        todo.value = { ... await loadTodo(id) };
-        originTodo.value = { ... await loadTodo(id) };
+        await store.dispatch('todosInfo/getTodoInfo', id);
+        const res = computed(() => store.getters['todosInfo/getTodo']);
+        todo.value = { ... res.value };
+        originTodo.value = { ... res.value };
         loading.value = false;
       } catch(err) {
         store.dispatch('toast/triggerToast', todoMessages.FAILED_TODO_INFO);
@@ -113,7 +113,7 @@ export default {
             subject: todo.value.subject,
             isCompleted: todo.value.isCompleted,
           }
-          await updateTodo(id, updateTodoObj);
+          await store.dispatch('todosInfo/updateTodoInfo', { id, updateTodoObj });
           store.dispatch('toast/triggerToast', todoMessages.SUCCESS_UPDATE_TODO_INFO);
           router.push({
             name: 'TodosList'

@@ -12,7 +12,7 @@ export default {
   mutations: {
       ADD_COINS(state, payload) {
           state.coins = [];
-          state.coins = [... JSON.parse(JSON.stringify(payload))];
+          state.coins = [...JSON.parse(JSON.stringify(payload))];
       },
   },
 
