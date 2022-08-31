@@ -21,7 +21,7 @@
                             @
                           </span>
                           <select 
-                            v-if="!isDirentInputEmail"
+                            v-if="!isDirectInputEmail"
                             v-model="userEmail"
                             @change="selectDirect(userEmail)"
                             class="form-select" 
@@ -90,7 +90,11 @@
                         </div>
                     </div>
                     <div class="d-grid">
-                        <button @click="signInSubmit" type="button" class="btn btn-success btn-lg">
+                        <button 
+                          @click="signInSubmit(userId, userEmail, userPassword, isSafetyPassword, isVerifiedPassword)" 
+                          type="button" 
+                          class="btn btn-success btn-lg"
+                        >
                             회원가입
                         </button>
                     </div>
@@ -115,8 +119,6 @@ import router from '@/router';
 
 import { authMessages } from '@/common/messages';
 
-import { createUserInfo } from '@/remote/auth';
-
 
 export default { 
     name: 'SignUpAuth',
@@ -126,7 +128,7 @@ export default {
 
       const userId = ref('');
       const userEmail = ref('naver.com');
-      const isDirentInputEmail = ref(false);
+      const isDirectInputEmail = ref(false);
       const userPassword = ref('');
       const isSafetyPassword = ref(false);
       const userPasswordFeedback = ref('');
@@ -137,11 +139,11 @@ export default {
       const selectDirect = (directInput) => {
         switch(directInput) {
           case "direct":
-            isDirentInputEmail.value = true;
+            isDirectInputEmail.value = true;
             break;
 
           default:
-            isDirentInputEmail.value = false;
+            isDirectInputEmail.value = false;
         }
       }
 
@@ -178,19 +180,19 @@ export default {
         }
       }
       
-      const signInSubmit = () => {
-        if (userId.value === '' 
-          || userEmail.value === '' 
-          || userPassword.value === ''
-          || !isSafetyPassword.value
-          || !isVerifiedPassword.value) {
+      const signInSubmit = (userId, userEmail, userPassword, isSafetyPassword, isVerifiedPassword) => {
+        if (userId === '' 
+          || userEmail === '' 
+          || userPassword === ''
+          || !isSafetyPassword
+          || !isVerifiedPassword) {
           store.dispatch('toast/triggerToast', authMessages.INVALID_CREATE_USER_INFO);
           return;
         }
 
         try {
-          const signUpEmail = `${userId.value}@${userEmail.value}`; 
-          createUserInfo(signUpEmail, userPassword.value);
+          const signUpEmail = `${userId}@${userEmail}`;
+          store.dispatch('usersInfo/userSignUp', {signUpEmail, userPassword});
           store.dispatch('toast/triggerToast', authMessages.SUCCESS_CREATE_USER_INFO);
           router.replace('/');
         } catch (error) {
@@ -201,7 +203,7 @@ export default {
       return {
           userId,
           userEmail,
-          isDirentInputEmail,
+          isDirectInputEmail,
           userPassword,
           isSafetyPassword,
           userPasswordFeedback,

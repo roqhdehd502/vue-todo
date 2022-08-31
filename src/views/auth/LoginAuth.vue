@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <div class="d-grid">
-                        <button @click="loginSubmit" type="button" class="btn btn-success btn-lg">
+                        <button @click="loginSubmit(userEmail, userPassword)" type="button" class="btn btn-success btn-lg">
                             로그인
                         </button>
                     </div>
@@ -58,13 +58,11 @@
 
 
 <script> 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router';
 
 import { authMessages } from '@/common/messages';
-
-import { getUserInfo, triggerLogin } from '@/remote/auth';
 
 
 export default { 
@@ -77,23 +75,24 @@ export default {
         const userPassword = ref('');
 
         const isLogin = () => {
-          const loginStatus = getUserInfo();
+          store.dispatch('usersInfo/getUserInfo');
+          const res = computed(() => store.getters['usersInfo/getUser']);
 
-          if (loginStatus) {
-            console.log("already login!");
+          if (res.value) {
+            console.log("ALREADY LOGIN!");
             router.replace('/');
           }
         }
         isLogin();
 
-        const loginSubmit = () => {
-          if (userEmail.value === '' || userPassword.value === '') {
+        const loginSubmit = (userEmail, userPassword) => {
+          if (userEmail === '' || userPassword === '') {
             store.dispatch('toast/triggerToast', authMessages.INVALID_USER_INFO);
             return;
           }
 
           try {
-            triggerLogin(userEmail.value, userPassword.value);
+            store.dispatch('usersInfo/userLogin', {userEmail, userPassword});
             router.replace('/');
           } catch (error) {
             console.log(error.message);

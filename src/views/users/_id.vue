@@ -114,13 +114,11 @@
 
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 import { authMessages } from '@/common/messages';
-
-import { getUserInfo, updateUserInfo, sendUserEmailVerify, deleteUserInfo } from '@/remote/auth';
 
 import UserDetail from '@/components/users/UserDetail.vue';
 
@@ -150,7 +148,9 @@ export default {
         };
 
         const getUserObj = () => {
-          userObj.value = getUserInfo();
+          store.dispatch('usersInfo/getUserInfo');
+          const res = computed(() => store.getters['usersInfo/getUser']);
+          userObj.value = res.value;
           loading.value = false;
           console.log(userObj.value.emailVerified)
         }
@@ -158,7 +158,7 @@ export default {
 
         const onEmailVerify = () => {
           try {
-            sendUserEmailVerify();
+            store.dispatch('usersInfo/sendUserEmailVerification');
             store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_USER_EMAIL_VERIFY);
           } catch (error) {
             store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_USER_EMAIL_VERIFY);
@@ -176,9 +176,9 @@ export default {
         const updateUser = async (userObj) => {
           try {
             const imageFile = document.querySelector('#user-image').files[0];
-            updateUserInfo(userObj, imageFile);
+            store.dispatch('usersInfo/updateUserInfo', {userObj, imageFile});
             router.push({
-                name: 'TodosList'
+              name: 'TodosList'
             });
           } catch(err) {
             store.dispatch('toast/triggerToast', authMessages.FAILED_UPDATE_USER_INFO);
@@ -187,7 +187,7 @@ export default {
 
         const deleteUser = () => {
           try {
-            deleteUserInfo();
+            store.dispatch('usersInfo/deleteUserInfo');
             showModal.value = false;
             router.push({
               name: 'TodosList'

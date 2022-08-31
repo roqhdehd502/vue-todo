@@ -11,7 +11,7 @@
 [Coin Todo](https://roqhdehd502.github.io/vue-todo)
 <hr />
 
-### 프로젝트 파일 구조 (2022.08.29)
+### 프로젝트 파일 구조
 ```
 -public
     ㄴfavicon.ico
@@ -63,7 +63,8 @@
         ㄴmodules
             ㄴcoinAPI.js ... Coinpaprika API Vuex 설정
             ㄴtoast.js ... toast 이벤트 Vuex 설정
-            ㄴtodos.js ... todo CRUD Vuex 설정            
+            ㄴtodosInfo.js ... todo CRUD Vuex 설정     
+            ㄴusersInfo.js ... user 정보 및 인증 Vuex 설정                   
 	    
         ㄴindex.js ... Vuex 메인 설정
 	

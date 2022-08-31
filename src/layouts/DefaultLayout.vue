@@ -1,6 +1,6 @@
 <template>
   <NavigationBar 
-    :userObj="userObj"
+    :userObj="userObj ? userObj : null"
     style="position: sticky; width: 100%; top: 0; z-index: 40;" 
   />
 
@@ -21,12 +21,12 @@
 
 
 <script>
-import { ref, watchEffect } from 'vue';
-
 import { 
-  getAuth
-  , onAuthStateChanged
-} from "firebase/auth";
+  ref, 
+  computed, 
+  onMounted, 
+} from 'vue';
+import { useStore } from 'vuex';
 
 import NavigationBar from '@/components/header/NavigationBar.vue';
 import CoinList from '@/components/coins/CoinMarketPrice.vue';
@@ -41,18 +41,18 @@ export default {
   },
 
   setup() {
-    const userObj = ref({});
+    const store = useStore();
 
-    const userStatusInit = () => {
-      onAuthStateChanged(getAuth(), (user) => {
-        if (user) {
-          userObj.value = user;
-        } else {
-          userObj.value = null;
-        }
-      });
-    };
-    watchEffect(()=> userStatusInit());
+    const userObj = ref(null);
+
+    const userStatusInit = onMounted(() => {
+      store.dispatch('usersInfo/getUserInfo');
+      const res = computed(() => store.getters['usersInfo/getUser']);
+      userObj.value = res.value;
+    });
+    setTimeout(() => {
+      userStatusInit();
+    }, 1000);
 
     return {
       userObj,

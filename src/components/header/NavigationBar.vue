@@ -42,8 +42,6 @@ import router from '@/router';
 
 import { authMessages } from '@/common/messages';
 
-import { signOutUserInfo } from '@/remote/auth';
-
 
 export default {
   name: 'NavigationBar',
@@ -75,7 +73,7 @@ export default {
 
     const logout = () => {
       try {
-        signOutUserInfo();
+        store.dispatch('usersInfo/userLogout');
         window.location.replace('/vue-todo');
       } catch (error) {
         store.dispatch('toast/triggerToast', authMessages.FAILED_LOGOUT);

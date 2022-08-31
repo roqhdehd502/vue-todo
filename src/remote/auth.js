@@ -1,5 +1,6 @@
 import { 
   getAuth,
+  //onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -12,40 +13,31 @@ import * as firebaseStorage from "firebase/storage";
 
 
 
+export const getUserInfo = () => {
+  let userObj = getAuth().currentUser ? getAuth().currentUser : null;
+
+  return userObj;
+}
+
+
 export const triggerLogin = (userEmail, userPassword) => {
   signInWithEmailAndPassword(getAuth(), userEmail, userPassword)
-    .then(() => {
-      console.log("LOGIN SUCCESS.");
-    })
-    .catch(() => {
-      console.log("LOGIN FAILED!");
-    });
-}
-
-
-export const getUserInfo = () => {
-  return getAuth().currentUser;
-}
-
-
-export const createUserInfo = (userEmail, userPassword) => {
-  createUserWithEmailAndPassword(getAuth(), userEmail, userPassword)
-    .then(() => {
-      console.log("SIGN UP SUCCESS.");
-    })
-    .catch(() => {
-      console.log("SIGN UP FAILED!");
-    }); 
+    .then(() => { console.log("LOGIN SUCCESS.") })
+    .catch(() => { console.log("LOGIN FAILED!") });
 }
 
 
 export const signOutUserInfo = () => {
   signOut(getAuth())
-    .then(() => {
-      console.log("LOGOUT SUCCESS.");
-    }).catch(() => {
-      console.log("LOGOUT FAILED!");
-    });
+    .then(() => { console.log("LOGOUT SUCCESS.") })
+    .catch(() => { console.log("LOGOUT FAILED!") });
+}
+
+
+export const createUserInfo = (userEmail, userPassword) => {
+  createUserWithEmailAndPassword(getAuth(), userEmail, userPassword)
+    .then(() => { console.log("SIGN UP SUCCESS.") })
+    .catch(() => { console.log("SIGN UP FAILED!") }); 
 }
 
 
@@ -73,19 +65,13 @@ export const updateUserInfo = async (userObj, userImageInfo) => {
 export const sendUserEmailVerify = () => {
   getAuth().languageCode = 'ko';
   sendEmailVerification(getAuth().currentUser)
-    .then(() => {
-      console.log("EMAIL VERIFICATION SEND SUCCESS.");
-    })
-    .catch(() => {
-      console.log("EMAIL VERIFICATION SEND FAILD.");
-    });
+    .then(() => { console.log("EMAIL VERIFICATION SEND SUCCESS.") })
+    .catch(() => { console.log("EMAIL VERIFICATION SEND FAILD.") });
 }
 
 
 export const deleteUserInfo = () => {
-  deleteUser(getAuth().currentUser).then(() => {
-    console.log("DELETE USER SUCCESS.");
-  }).catch(() => {
-    console.log("DELETE USER FAILED!");
-  });
+  deleteUser(getAuth().currentUser)
+    .then(() => { console.log("DELETE USER SUCCESS.") })
+    .catch(() => { console.log("DELETE USER FAILED!") });
 }
