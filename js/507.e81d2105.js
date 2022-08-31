@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkvue_mini_project"]=self["webpackChunkvue_mini_project"]||[]).push([[507],{507:function(e,n,r){r.r(n),r.d(n,{default:function(){return a}});var t=r(3396);function u(e,n,r,u,c,i){const o=(0,t.up)("router-view");return(0,t.wg)(),(0,t.j4)(o)}var c={name:"EmptyLayout"},i=r(89);const o=(0,i.Z)(c,[["render",u]]);var a=o}}]);
+//# sourceMappingURL=507.e81d2105.js.map
