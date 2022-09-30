@@ -53,6 +53,15 @@
         <div class="row mt-3 g-3">
             <button @click="modifyMode" class="btn btn-success">프로필수정</button>
             <button @click="moveToTodoListPage" class="btn btn-primary">메인페이지</button>
+        </div><hr />
+        <div class="row g-3">
+            <button 
+                type="button" 
+                class="btn btn-warning"
+                @click="logout"
+            >
+                로그아웃
+            </button>
         </div>
     </div>
 
@@ -92,6 +101,13 @@
             </button>
         </div><hr />
         <div class="row g-2">
+            <button 
+                @click="updateUserPassword()"
+                type="button" 
+                class="btn btn-warning"
+            >
+                비밀번호 변경
+            </button>
             <button 
                 @click.stop="openModal()"
                 type="button" 
@@ -152,7 +168,6 @@ export default {
           const res = computed(() => store.getters['usersInfo/getUser']);
           userObj.value = res.value;
           loading.value = false;
-          console.log(userObj.value.emailVerified)
         }
         getUserObj();
 
@@ -185,9 +200,22 @@ export default {
           }
         }
 
+        const updateUserPassword = () => {
+          try {
+            store.dispatch('usersInfo/updateUserPassword', userObj.value.email);
+            store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_UPDATE_USER_PASSWORD);
+            router.push({
+              name: 'TodosList'
+            });
+          } catch(err) {
+            store.dispatch('toast/triggerToast', authMessages.FAILED_SEND_UPDATE_USER_PASSWORD);
+          }
+        }
+
         const deleteUser = () => {
           try {
             store.dispatch('usersInfo/deleteUserInfo');
+            store.dispatch('usersInfo/userLogout');
             showModal.value = false;
             router.push({
               name: 'TodosList'
@@ -196,6 +224,15 @@ export default {
             store.dispatch('toast/triggerToast', authMessages.FAILED_DELETE_USER_INFO);
           }
         };
+
+        const logout = () => {
+          try {
+            store.dispatch('usersInfo/userLogout');
+            window.location.replace('/vue-todo');
+          } catch (error) {
+            store.dispatch('toast/triggerToast', authMessages.FAILED_LOGOUT);
+          }
+        }
 
         const moveToTodoListPage = () => { 
           router.push({
@@ -214,7 +251,9 @@ export default {
           onEmailVerify,
           modifyMode,
           updateUser,
+          updateUserPassword,
           deleteUser,
+          logout,
           moveToTodoListPage,
         }
     }

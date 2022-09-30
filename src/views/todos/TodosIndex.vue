@@ -9,7 +9,7 @@
         v-if="!loading"
         class="mb-3 bg-light text-success spinner-border" 
         role="status"
-        style="margin-left: 45%"
+        style="margin-left: 48%"
       >
         <span class="visually-hidden">Loading...</span>
       </div>

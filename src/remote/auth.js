@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendPasswordResetEmail,
   sendEmailVerification,
   deleteUser,
 } from "firebase/auth";
@@ -59,6 +60,14 @@ export const updateUserInfo = async (userObj, userImageInfo) => {
     displayName: userObj.displayName,
     photoURL: imageURL === undefined ? userObj.photoURL : imageURL
   });
+}
+
+export const updateUserPassword = (userEmail) => {
+  getAuth().languageCode = 'ko';
+  //getAuth().currentUser.email
+  sendPasswordResetEmail(getAuth(), userEmail)
+    .then(() => { console.log("UPDATE USER PASSWORD SEND SUCCESS.") })
+    .catch((err) => { console.log("UPDATE USER PASSWORD SEND FAILD.", err) });
 }
 
 

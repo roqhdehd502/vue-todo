@@ -66,8 +66,8 @@
                             <div class="progress">
                               <div 
                                 class="progress-bar"
-                                :class="passwordStrengthLevel" 
-                                style="width: 100%"
+                                :class="passwordStrengthLevel"
+                                :style="passwordStrengthGauge"
                                 aria-valuenow="100" 
                                 aria-valuemin="0" 
                                 aria-valuemax="100"
@@ -113,7 +113,7 @@
 
 
 <script> 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router';
 
@@ -133,8 +133,20 @@ export default {
       const isSafetyPassword = ref(false);
       const userPasswordFeedback = ref('');
       const passwordStrengthLevel = ref('');
+      const passwordStrengthGauge = ref('');
       const verifiedPassword = ref('');
       const isVerifiedPassword = ref(false);
+
+      const isLogin = () => {
+        store.dispatch('usersInfo/getUserInfo');
+        const res = computed(() => store.getters['usersInfo/getUser']);
+
+        if (res.value) {
+          console.log("ALREADY LOGIN!");
+          router.replace('/');
+        }
+      }
+      isLogin();
 
       const selectDirect = (directInput) => {
         switch(directInput) {
@@ -155,20 +167,25 @@ export default {
         if (passwordInput.length == 0) {
             userPasswordFeedback.value = '패스워드를 입력하세요.';
             passwordStrengthLevel.value = 'bg-danger';
+            passwordStrengthGauge.value = 'width: 33%';
         } else if (false == enoughRegex.test(passwordInput)) {
             userPasswordFeedback.value = '패스워드가 8글자를 넘어야 합니다.';
             passwordStrengthLevel.value = 'bg-danger';
+            passwordStrengthGauge.value = 'width: 33%';
         } else if (strongRegex.test(passwordInput)) {
             userPasswordFeedback.value = '안전합니다!';
             isSafetyPassword.value = true;
             passwordStrengthLevel.value = 'bg-success';
+            passwordStrengthGauge.value = 'width: 100%';
         } else if (mediumRegex.test(passwordInput)) {
             userPasswordFeedback.value = '권장하지 않습니다!';
             isSafetyPassword.value = true;
             passwordStrengthLevel.value = 'bg-warning';
+            passwordStrengthGauge.value = 'width: 66%';
         } else {
             userPasswordFeedback.value = '위험합니다!';
             passwordStrengthLevel.value = 'bg-danger';
+            passwordStrengthGauge.value = 'width: 33%';
         }
       }
 
@@ -208,6 +225,7 @@ export default {
           isSafetyPassword,
           userPasswordFeedback,
           passwordStrengthLevel,
+          passwordStrengthGauge,
           verifiedPassword,
           isVerifiedPassword,
           

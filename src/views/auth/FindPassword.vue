@@ -9,7 +9,7 @@
             <div class="card card-style">
                 <div class="container justify-content-center">
                     <div class="row">
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-5">
                             <input 
                                 v-model="userEmail"
                                 type="email" 
@@ -22,31 +22,18 @@
                                 이메일
                             </label>
                         </div>
-                        <div class="form-floating mb-5">
-                            <input 
-                                v-model="userPassword"
-                                type="password" 
-                                id="floatingPassword" 
-                                class="form-control" 
-                                placeholder="비밀번호"
-                                required
-                            >
-                            <label for="floatingPassword">
-                                비밀번호
-                            </label>
-                        </div>
                     </div>
                     <div class="d-grid">
-                        <button @click="loginSubmit(userEmail, userPassword)" type="button" class="btn btn-success btn-lg">
-                            로그인
+                        <button @click="updateUserPassword()" type="button" class="btn btn-success btn-lg">
+                            비밀번호 재설정
                         </button>
                     </div>
                 </div>
             </div>
             <div class="extra-style">
-                <router-link to="/signup">회원가입</router-link>
+                <router-link to="/login">로그인</router-link>
                 &nbsp;|&nbsp;
-                <router-link to="/findpassword">비밀번호 찾기</router-link>
+                <router-link to="/signup">회원가입</router-link>
             </div>
             <div class="extra-style g-3">
               <router-link to="/">메인 페이지로 돌아가기</router-link>
@@ -72,7 +59,6 @@ export default {
         const store = useStore();
 
         const userEmail = ref('');
-        const userPassword = ref('');
 
         const isLogin = () => {
           store.dispatch('usersInfo/getUserInfo');
@@ -85,26 +71,23 @@ export default {
         }
         isLogin();
 
-        const loginSubmit = (userEmail, userPassword) => {
-          if (userEmail === '' || userPassword === '') {
-            store.dispatch('toast/triggerToast', authMessages.INVALID_USER_INFO);
-            return;
-          }
-
+        const updateUserPassword = () => {
           try {
-            store.dispatch('usersInfo/userLogin', {userEmail, userPassword});
-            router.replace('/');
-          } catch (error) {
-            console.log(error.message);
-            store.dispatch('toast/triggerToast', authMessages.INVALID_USER_INFO);
+            store.dispatch('usersInfo/updateUserPassword', userEmail.value);
+            store.dispatch('toast/triggerToast', authMessages.SUCCESS_SEND_UPDATE_USER_PASSWORD);
+            router.push({
+              name: 'Login'
+            });
+          } catch(err) {
+            store.dispatch('toast/triggerToast', authMessages.FAILED_SEND_UPDATE_USER_PASSWORD);
           }
-        };
+        }
+
 
         return {
             userEmail,
-            userPassword,
             
-            loginSubmit,
+            updateUserPassword,
         }
     }
 }; 

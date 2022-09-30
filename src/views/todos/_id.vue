@@ -1,8 +1,9 @@
 <template>
   <div 
     v-if="loading"
-    class="spinner-border text-success justify-content-center" 
+    class="d-flex justify-content-center spinner-border text-success" 
     role="status"
+    style="margin-left: 48%"
   >
     <span class="visually-hidden">Loading...</span>
   </div>

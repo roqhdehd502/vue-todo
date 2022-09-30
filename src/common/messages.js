@@ -18,6 +18,12 @@ export const authMessages =
     type: 'success' 
   },
 
+  SUCCESS_SEND_UPDATE_USER_PASSWORD :
+  { 
+    message: '회원님의 이메일로 비밀번호 변경 메시지를 전송 하였습니다.', 
+    type: 'success' 
+  },
+
   SUCCESS_SEND_USER_EMAIL_VERIFY :
   { 
     message: '인증 메시지를 전송 하였습니다.', 
@@ -63,6 +69,12 @@ export const authMessages =
   FAILED_UPDATE_USER_INFO :
   { 
     message: '오류로 인해 회원 정보를 변경 할 수 없습니다!', 
+    type: 'danger' 
+  },
+
+  FAILED_SEND_UPDATE_USER_PASSWORD :
+  { 
+    message: '오류로 인해 비밀번호 변경 메시지를 전송 할 수 없습니다!', 
     type: 'danger' 
   },
   

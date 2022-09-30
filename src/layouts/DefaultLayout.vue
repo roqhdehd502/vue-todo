@@ -52,7 +52,7 @@ export default {
     });
     setTimeout(() => {
       userStatusInit();
-    }, 1000);
+    }, 2000);
 
     return {
       userObj,

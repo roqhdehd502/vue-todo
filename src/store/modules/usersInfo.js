@@ -1,4 +1,4 @@
-import { getUserInfo, triggerLogin, signOutUserInfo, createUserInfo, updateUserInfo, sendUserEmailVerify, deleteUserInfo } from "@/remote/auth";
+import { getUserInfo, triggerLogin, signOutUserInfo, createUserInfo, updateUserInfo, updateUserPassword, sendUserEmailVerify, deleteUserInfo } from "@/remote/auth";
 
 
 
@@ -19,7 +19,7 @@ export default {
       },
       DUMMY_MUTATION(state) {
           state.dummy = {};
-      }
+      },
   },
 
   actions: {
@@ -43,6 +43,10 @@ export default {
           updateUserInfo(payload.userObj, payload.imageFile);
           commit('DUMMY_MUTATION');
       },
+      updateUserPassword({ commit }, payload) {
+          updateUserPassword(payload);
+          commit('DUMMY_MUTATION');
+      },      
       sendUserEmailVerification({ commit }) {
           sendUserEmailVerify();
           commit('DUMMY_MUTATION');
@@ -50,12 +54,12 @@ export default {
       deleteUserInfo({ commit }) {
           deleteUserInfo();
           commit('REMOVE_USER');
-      },     
+      },
   },
 
   getters: {
       getUser(state) {
           return state.user;
-      },
+      }
   }
 }

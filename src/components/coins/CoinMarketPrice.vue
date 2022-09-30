@@ -20,7 +20,7 @@
             <option value="-1">최대</option>
           </select>
         </div>
-        <div @click="reloading">        
+        <div @click="manualReloading">        
           <span class="material-icons refresh-icon">
             refresh
           </span>
@@ -72,28 +72,30 @@ export default {
     const store = useStore();
 
     const loading = ref(false);
-    const autoReloadSeconds = 30; 
     const coins = ref([]);
     const coinTypeLength = ref(5);
 
     const getCoins = onMounted(async () => {
       try {
-        await store.dispatch('coinAPI/getCoinAPI');
+        await store.dispatch('coinAPI/getCoinAPI', coinTypeLength.value);
         const res = computed(() => store.getters['coinAPI/getCoins']);
-        coins.value = res.value.slice(0, coinTypeLength.value);
+        coins.value = res.value;
         loading.value = true;
       } catch (error) {
+        console.error(error);
         store.dispatch('toast/triggerToast', coinMessages.FAILED_COINS_INFO);
       }
     });
 
-    const reloading = () => {
+    const manualReloading = () => {
       getCoins();
     };
-
-    setInterval(() => {
-      getCoins();
-    }, autoReloadSeconds * 1000);
+    
+    let reloadCount = 5;
+    let autoReloading = setInterval(() => {
+      reloadCount -= 1;
+      if(reloadCount === 0) clearInterval(autoReloading);
+    }, 10000);
 
     return {
       loading,
@@ -101,7 +103,8 @@ export default {
       coinTypeLength,
       
       getCoins,
-      reloading,
+      manualReloading,
+      autoReloading,
       priceFormatting,
       pricePercentChangeColor,
     }

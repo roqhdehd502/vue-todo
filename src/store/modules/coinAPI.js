@@ -17,9 +17,9 @@ export default {
   },
 
   actions: {
-      async getCoinAPI({ commit }) {
+      async getCoinAPI({ commit }, payload) {
           await getCoinpaprikaAPI()
-            .then(res => { commit('ADD_COINS', res.data) })
+            .then(res => { commit('ADD_COINS', res.data.slice(0, payload)) })
             .catch(error => console.log(error));
       }
   },
